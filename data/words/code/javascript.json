@@ -1,0 +1,5 @@
+{
+  "name": "javascript",
+  "display": "JavaScript",
+  "words": ["const", "let", "var", "function", "return", "if", "else", "for", "while", "switch", "case", "break", "continue", "class", "extends", "constructor", "this", "new", "import", "export", "default", "async", "await", "try", "catch", "throw", "finally", "typeof", "instanceof", "null", "undefined", "true", "false", "console", "log", "error", "map", "filter", "reduce", "forEach", "push", "pop", "shift", "unshift", "slice", "splice", "concat", "join", "split", "length", "indexOf", "includes", "find", "findIndex", "some", "every", "Object", "Array", "String", "Number", "Boolean", "Date", "Math", "JSON", "Promise", "fetch", "then", "catch", "resolve", "reject", "module", "require", "exports", "prototype", "bind", "call", "apply", "arrow", "template", "literal", "spread", "rest", "destructuring", "addEventListener", "querySelector", "getElementById", "createElement", "appendChild", "innerHTML", "textContent", "style", "classList", "setAttribute", "getAttribute", "removeChild", "parentNode", "children", "nextSibling", "previousSibling"]
+}

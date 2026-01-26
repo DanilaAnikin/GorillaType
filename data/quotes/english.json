@@ -1,0 +1,604 @@
+{
+  "quotes": [
+    {
+      "id": "1",
+      "text": "The only way to do great work is to love what you do.",
+      "source": "Steve Jobs",
+      "length": "short"
+    },
+    {
+      "id": "2",
+      "text": "Stay hungry, stay foolish.",
+      "source": "Steve Jobs",
+      "length": "short"
+    },
+    {
+      "id": "3",
+      "text": "Innovation distinguishes between a leader and a follower.",
+      "source": "Steve Jobs",
+      "length": "short"
+    },
+    {
+      "id": "4",
+      "text": "Your time is limited, so don't waste it living someone else's life.",
+      "source": "Steve Jobs",
+      "length": "short"
+    },
+    {
+      "id": "5",
+      "text": "Be yourself; everyone else is already taken.",
+      "source": "Oscar Wilde",
+      "length": "short"
+    },
+    {
+      "id": "6",
+      "text": "To live is the rarest thing in the world. Most people exist, that is all.",
+      "source": "Oscar Wilde",
+      "length": "short"
+    },
+    {
+      "id": "7",
+      "text": "The truth is rarely pure and never simple.",
+      "source": "Oscar Wilde",
+      "length": "short"
+    },
+    {
+      "id": "8",
+      "text": "Imagination is more important than knowledge.",
+      "source": "Albert Einstein",
+      "length": "short"
+    },
+    {
+      "id": "9",
+      "text": "Life is what happens when you're busy making other plans.",
+      "source": "John Lennon",
+      "length": "short"
+    },
+    {
+      "id": "10",
+      "text": "The unexamined life is not worth living.",
+      "source": "Socrates",
+      "length": "short"
+    },
+    {
+      "id": "11",
+      "text": "I think, therefore I am.",
+      "source": "Rene Descartes",
+      "length": "short"
+    },
+    {
+      "id": "12",
+      "text": "That which does not kill us makes us stronger.",
+      "source": "Friedrich Nietzsche",
+      "length": "short"
+    },
+    {
+      "id": "13",
+      "text": "The only true wisdom is in knowing you know nothing.",
+      "source": "Socrates",
+      "length": "short"
+    },
+    {
+      "id": "14",
+      "text": "In the middle of difficulty lies opportunity.",
+      "source": "Albert Einstein",
+      "length": "short"
+    },
+    {
+      "id": "15",
+      "text": "Knowledge is power.",
+      "source": "Francis Bacon",
+      "length": "short"
+    },
+    {
+      "id": "16",
+      "text": "To be or not to be, that is the question.",
+      "source": "William Shakespeare",
+      "length": "short"
+    },
+    {
+      "id": "17",
+      "text": "May the Force be with you.",
+      "source": "Star Wars",
+      "length": "short"
+    },
+    {
+      "id": "18",
+      "text": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      "source": "Winston Churchill",
+      "length": "short"
+    },
+    {
+      "id": "19",
+      "text": "The future belongs to those who believe in the beauty of their dreams.",
+      "source": "Eleanor Roosevelt",
+      "length": "medium"
+    },
+    {
+      "id": "20",
+      "text": "It is during our darkest moments that we must focus to see the light.",
+      "source": "Aristotle",
+      "length": "short"
+    },
+    {
+      "id": "21",
+      "text": "Your most unhappy customers are your greatest source of learning.",
+      "source": "Bill Gates",
+      "length": "short"
+    },
+    {
+      "id": "22",
+      "text": "Success is a lousy teacher. It seduces smart people into thinking they can't lose.",
+      "source": "Bill Gates",
+      "length": "medium"
+    },
+    {
+      "id": "23",
+      "text": "If you are born poor it's not your mistake, but if you die poor it's your mistake.",
+      "source": "Bill Gates",
+      "length": "medium"
+    },
+    {
+      "id": "24",
+      "text": "When something is important enough, you do it even if the odds are not in your favor.",
+      "source": "Elon Musk",
+      "length": "medium"
+    },
+    {
+      "id": "25",
+      "text": "I think it's possible for ordinary people to choose to be extraordinary.",
+      "source": "Elon Musk",
+      "length": "short"
+    },
+    {
+      "id": "26",
+      "text": "Persistence is very important. You should not give up unless you are forced to give up.",
+      "source": "Elon Musk",
+      "length": "medium"
+    },
+    {
+      "id": "27",
+      "text": "The reports of my death are greatly exaggerated.",
+      "source": "Mark Twain",
+      "length": "short"
+    },
+    {
+      "id": "28",
+      "text": "If you tell the truth, you don't have to remember anything.",
+      "source": "Mark Twain",
+      "length": "short"
+    },
+    {
+      "id": "29",
+      "text": "The secret of getting ahead is getting started.",
+      "source": "Mark Twain",
+      "length": "short"
+    },
+    {
+      "id": "30",
+      "text": "Whenever you find yourself on the side of the majority, it is time to pause and reflect.",
+      "source": "Mark Twain",
+      "length": "medium"
+    },
+    {
+      "id": "31",
+      "text": "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.",
+      "source": "Albert Einstein",
+      "length": "medium"
+    },
+    {
+      "id": "32",
+      "text": "The important thing is not to stop questioning. Curiosity has its own reason for existing.",
+      "source": "Albert Einstein",
+      "length": "medium"
+    },
+    {
+      "id": "33",
+      "text": "Try not to become a man of success, but rather try to become a man of value.",
+      "source": "Albert Einstein",
+      "length": "medium"
+    },
+    {
+      "id": "34",
+      "text": "If I have seen further it is by standing on the shoulders of giants.",
+      "source": "Isaac Newton",
+      "length": "short"
+    },
+    {
+      "id": "35",
+      "text": "What we know is a drop, what we don't know is an ocean.",
+      "source": "Isaac Newton",
+      "length": "short"
+    },
+    {
+      "id": "36",
+      "text": "Nothing in life is to be feared, it is only to be understood. Now is the time to understand more, so that we may fear less.",
+      "source": "Marie Curie",
+      "length": "medium"
+    },
+    {
+      "id": "37",
+      "text": "Be less curious about people and more curious about ideas.",
+      "source": "Marie Curie",
+      "length": "short"
+    },
+    {
+      "id": "38",
+      "text": "Life is not easy for any of us. But what of that? We must have perseverance and above all confidence in ourselves.",
+      "source": "Marie Curie",
+      "length": "medium"
+    },
+    {
+      "id": "39",
+      "text": "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+      "source": "Aristotle",
+      "length": "short"
+    },
+    {
+      "id": "40",
+      "text": "Knowing yourself is the beginning of all wisdom.",
+      "source": "Aristotle",
+      "length": "short"
+    },
+    {
+      "id": "41",
+      "text": "It is the mark of an educated mind to be able to entertain a thought without accepting it.",
+      "source": "Aristotle",
+      "length": "medium"
+    },
+    {
+      "id": "42",
+      "text": "It does not matter how slowly you go as long as you do not stop.",
+      "source": "Confucius",
+      "length": "short"
+    },
+    {
+      "id": "43",
+      "text": "Our greatest glory is not in never falling, but in rising every time we fall.",
+      "source": "Confucius",
+      "length": "short"
+    },
+    {
+      "id": "44",
+      "text": "Real knowledge is to know the extent of one's ignorance.",
+      "source": "Confucius",
+      "length": "short"
+    },
+    {
+      "id": "45",
+      "text": "I have not failed. I've just found 10,000 ways that won't work.",
+      "source": "Thomas Edison",
+      "length": "short"
+    },
+    {
+      "id": "46",
+      "text": "All we have to decide is what to do with the time that is given us.",
+      "source": "J.R.R. Tolkien, The Fellowship of the Ring",
+      "length": "short"
+    },
+    {
+      "id": "47",
+      "text": "Not all those who wander are lost.",
+      "source": "J.R.R. Tolkien",
+      "length": "short"
+    },
+    {
+      "id": "48",
+      "text": "Here's looking at you, kid.",
+      "source": "Casablanca",
+      "length": "short"
+    },
+    {
+      "id": "49",
+      "text": "After all, tomorrow is another day.",
+      "source": "Gone with the Wind",
+      "length": "short"
+    },
+    {
+      "id": "50",
+      "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+      "source": "Jane Austen, Pride and Prejudice",
+      "length": "medium"
+    },
+    {
+      "id": "51",
+      "text": "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+      "source": "Nelson Mandela",
+      "length": "medium"
+    },
+    {
+      "id": "52",
+      "text": "In three words I can sum up everything I've learned about life: it goes on.",
+      "source": "Robert Frost",
+      "length": "short"
+    },
+    {
+      "id": "53",
+      "text": "The only impossible journey is the one you never begin.",
+      "source": "Tony Robbins",
+      "length": "short"
+    },
+    {
+      "id": "54",
+      "text": "Do not go where the path may lead, go instead where there is no path and leave a trail.",
+      "source": "Ralph Waldo Emerson",
+      "length": "medium"
+    },
+    {
+      "id": "55",
+      "text": "The best time to plant a tree was 20 years ago. The second best time is now.",
+      "source": "Chinese Proverb",
+      "length": "short"
+    },
+    {
+      "id": "56",
+      "text": "A person who never made a mistake never tried anything new.",
+      "source": "Albert Einstein",
+      "length": "short"
+    },
+    {
+      "id": "57",
+      "text": "The mind is everything. What you think you become.",
+      "source": "Buddha",
+      "length": "short"
+    },
+    {
+      "id": "58",
+      "text": "You miss 100% of the shots you don't take.",
+      "source": "Wayne Gretzky",
+      "length": "short"
+    },
+    {
+      "id": "59",
+      "text": "Whether you think you can or you think you can't, you're right.",
+      "source": "Henry Ford",
+      "length": "short"
+    },
+    {
+      "id": "60",
+      "text": "The journey of a thousand miles begins with one step.",
+      "source": "Lao Tzu",
+      "length": "short"
+    },
+    {
+      "id": "61",
+      "text": "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+      "source": "Ralph Waldo Emerson",
+      "length": "medium"
+    },
+    {
+      "id": "62",
+      "text": "We do not inherit the Earth from our ancestors; we borrow it from our children. Every day we must think about our impact on the world.",
+      "source": "Native American Proverb",
+      "length": "medium"
+    },
+    {
+      "id": "63",
+      "text": "The only thing we have to fear is fear itself. Nameless, unreasoning, unjustified terror which paralyzes needed efforts to convert retreat into advance.",
+      "source": "Franklin D. Roosevelt",
+      "length": "medium"
+    },
+    {
+      "id": "64",
+      "text": "Ask not what your country can do for you; ask what you can do for your country. My fellow citizens of the world: ask not what America will do for you, but what together we can do for the freedom of man.",
+      "source": "John F. Kennedy",
+      "length": "long"
+    },
+    {
+      "id": "65",
+      "text": "I have a dream that one day this nation will rise up and live out the true meaning of its creed: We hold these truths to be self-evident, that all men are created equal.",
+      "source": "Martin Luther King Jr.",
+      "length": "long"
+    },
+    {
+      "id": "66",
+      "text": "The world is a book and those who do not travel read only one page. Every journey teaches us something new about ourselves and the world around us.",
+      "source": "Saint Augustine",
+      "length": "medium"
+    },
+    {
+      "id": "67",
+      "text": "It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena.",
+      "source": "Theodore Roosevelt",
+      "length": "long"
+    },
+    {
+      "id": "68",
+      "text": "We shall fight on the beaches, we shall fight on the landing grounds, we shall fight in the fields and in the streets, we shall fight in the hills; we shall never surrender.",
+      "source": "Winston Churchill",
+      "length": "long"
+    },
+    {
+      "id": "69",
+      "text": "You must be the change you wish to see in the world. If we could change ourselves, the tendencies in the world would also change. As a man changes his own nature, so does the attitude of the world change towards him.",
+      "source": "Mahatma Gandhi",
+      "length": "long"
+    },
+    {
+      "id": "70",
+      "text": "Education is the most powerful weapon which you can use to change the world. It is through education that the daughter of a peasant can become a doctor, that the son of a mineworker can become the head of the mine.",
+      "source": "Nelson Mandela",
+      "length": "long"
+    },
+    {
+      "id": "71",
+      "text": "The measure of a man is what he does with power. Character is tested in the moments when we have control over others and must choose between kindness and cruelty.",
+      "source": "Plato",
+      "length": "medium"
+    },
+    {
+      "id": "72",
+      "text": "I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.",
+      "source": "Maya Angelou",
+      "length": "medium"
+    },
+    {
+      "id": "73",
+      "text": "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.",
+      "source": "Ralph Waldo Emerson",
+      "length": "long"
+    },
+    {
+      "id": "74",
+      "text": "In the end, it's not the years in your life that count. It's the life in your years. Make every moment meaningful and live with purpose and passion every single day.",
+      "source": "Abraham Lincoln",
+      "length": "medium"
+    },
+    {
+      "id": "75",
+      "text": "The greatest discovery of all time is that a person can change his future by merely changing his attitude.",
+      "source": "Oprah Winfrey",
+      "length": "medium"
+    },
+    {
+      "id": "76",
+      "text": "Life is really simple, but we insist on making it complicated. The key to happiness lies in simplicity, yet we continually search for complexity in our pursuit of fulfillment.",
+      "source": "Confucius",
+      "length": "long"
+    },
+    {
+      "id": "77",
+      "text": "First they ignore you, then they laugh at you, then they fight you, then you win. Every great change in history has followed this pattern of resistance before acceptance.",
+      "source": "Mahatma Gandhi",
+      "length": "long"
+    },
+    {
+      "id": "78",
+      "text": "Here's to the crazy ones, the misfits, the rebels, the troublemakers, the round pegs in the square holes. The ones who see things differently. They're not fond of rules. You can quote them, disagree with them, glorify or vilify them, but the only thing you can't do is ignore them. Because they change things.",
+      "source": "Apple Inc.",
+      "length": "thicc"
+    },
+    {
+      "id": "79",
+      "text": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair.",
+      "source": "Charles Dickens, A Tale of Two Cities",
+      "length": "thicc"
+    },
+    {
+      "id": "80",
+      "text": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived. I did not wish to live what was not life, living is so dear.",
+      "source": "Henry David Thoreau, Walden",
+      "length": "thicc"
+    },
+    {
+      "id": "81",
+      "text": "The only people for me are the mad ones, the ones who are mad to live, mad to talk, mad to be saved, desirous of everything at the same time, the ones who never yawn or say a commonplace thing, but burn, burn, burn like fabulous yellow roman candles exploding like spiders across the stars.",
+      "source": "Jack Kerouac, On the Road",
+      "length": "thicc"
+    },
+    {
+      "id": "82",
+      "text": "It is a far, far better thing that I do, than I have ever done; it is a far, far better rest that I go to than I have ever known. In the culmination of all human experience, we find that sacrifice for others represents the highest form of love and the most noble expression of the human spirit.",
+      "source": "Charles Dickens, A Tale of Two Cities",
+      "length": "thicc"
+    },
+    {
+      "id": "83",
+      "text": "The man who reads nothing at all is better educated than the man who reads nothing but newspapers. True wisdom comes from diverse sources of knowledge, contemplation, and lived experience.",
+      "source": "Thomas Jefferson",
+      "length": "long"
+    },
+    {
+      "id": "84",
+      "text": "Great minds discuss ideas; average minds discuss events; small minds discuss people.",
+      "source": "Eleanor Roosevelt",
+      "length": "medium"
+    },
+    {
+      "id": "85",
+      "text": "The way to get started is to quit talking and begin doing. Action is the foundational key to all success. Do not wait for the perfect moment; take the moment and make it perfect.",
+      "source": "Walt Disney",
+      "length": "long"
+    },
+    {
+      "id": "86",
+      "text": "If you look at what you have in life, you'll always have more. If you look at what you don't have in life, you'll never have enough.",
+      "source": "Oprah Winfrey",
+      "length": "medium"
+    },
+    {
+      "id": "87",
+      "text": "Don't judge each day by the harvest you reap but by the seeds that you plant.",
+      "source": "Robert Louis Stevenson",
+      "length": "short"
+    },
+    {
+      "id": "88",
+      "text": "The weak can never forgive. Forgiveness is the attribute of the strong.",
+      "source": "Mahatma Gandhi",
+      "length": "short"
+    },
+    {
+      "id": "89",
+      "text": "Twenty years from now you will be more disappointed by the things that you didn't do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbor. Catch the trade winds in your sails. Explore. Dream. Discover.",
+      "source": "Mark Twain",
+      "length": "thicc"
+    },
+    {
+      "id": "90",
+      "text": "We are all in the gutter, but some of us are looking at the stars.",
+      "source": "Oscar Wilde",
+      "length": "short"
+    },
+    {
+      "id": "91",
+      "text": "The future depends on what you do today. Every action you take now shapes the world that will be inherited by generations to come.",
+      "source": "Mahatma Gandhi",
+      "length": "medium"
+    },
+    {
+      "id": "92",
+      "text": "A ship in harbor is safe, but that is not what ships are built for. Take risks, embrace uncertainty, and sail towards the horizons of your greatest ambitions.",
+      "source": "John A. Shedd",
+      "length": "long"
+    },
+    {
+      "id": "93",
+      "text": "The happiness of your life depends upon the quality of your thoughts: therefore, guard accordingly, and take care that you entertain no notions unsuitable to virtue and reasonable nature.",
+      "source": "Marcus Aurelius",
+      "length": "long"
+    },
+    {
+      "id": "94",
+      "text": "Simplicity is the ultimate sophistication.",
+      "source": "Leonardo da Vinci",
+      "length": "short"
+    },
+    {
+      "id": "95",
+      "text": "The only thing standing between you and your goal is the story you keep telling yourself as to why you can't achieve it.",
+      "source": "Jordan Belfort",
+      "length": "medium"
+    },
+    {
+      "id": "96",
+      "text": "Logic will get you from A to B. Imagination will take you everywhere.",
+      "source": "Albert Einstein",
+      "length": "short"
+    },
+    {
+      "id": "97",
+      "text": "What you get by achieving your goals is not as important as what you become by achieving your goals. The journey transforms you more than the destination ever could.",
+      "source": "Zig Ziglar",
+      "length": "long"
+    },
+    {
+      "id": "98",
+      "text": "Darkness cannot drive out darkness; only light can do that. Hate cannot drive out hate; only love can do that.",
+      "source": "Martin Luther King Jr.",
+      "length": "medium"
+    },
+    {
+      "id": "99",
+      "text": "Do what you can, with what you have, where you are. The circumstances of your life need not limit the impact you can have on the world around you.",
+      "source": "Theodore Roosevelt",
+      "length": "medium"
+    },
+    {
+      "id": "100",
+      "text": "There is nothing permanent except change. All things are in flux, and every individual thing is constantly changing, flowing from one state to another. Embrace the impermanence, for therein lies the beauty of existence itself.",
+      "source": "Heraclitus",
+      "length": "thicc"
+    }
+  ]
+}

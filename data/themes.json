@@ -1,0 +1,229 @@
+{
+  "themes": [
+    {
+      "id": "serika-dark",
+      "name": "Serika Dark",
+      "category": "dark",
+      "colors": {
+        "bg": "#323437",
+        "main": "#e2b714",
+        "caret": "#e2b714",
+        "sub": "#646669",
+        "subAlt": "#2c2e31",
+        "text": "#d1d0c5",
+        "error": "#ca4754",
+        "errorExtra": "#7e2a33"
+      }
+    },
+    {
+      "id": "serika",
+      "name": "Serika",
+      "category": "light",
+      "colors": {
+        "bg": "#e1e1e3",
+        "main": "#e2b714",
+        "caret": "#e2b714",
+        "sub": "#aaaeb3",
+        "subAlt": "#cdcfd3",
+        "text": "#323437",
+        "error": "#ca4754",
+        "errorExtra": "#7e2a33"
+      }
+    },
+    {
+      "id": "dracula",
+      "name": "Dracula",
+      "category": "dark",
+      "colors": {
+        "bg": "#282a36",
+        "main": "#bd93f9",
+        "caret": "#f8f8f2",
+        "sub": "#6272a4",
+        "subAlt": "#21222c",
+        "text": "#f8f8f2",
+        "error": "#ff5555",
+        "errorExtra": "#ff6e6e"
+      }
+    },
+    {
+      "id": "nord",
+      "name": "Nord",
+      "category": "dark",
+      "colors": {
+        "bg": "#2e3440",
+        "main": "#88c0d0",
+        "caret": "#d8dee9",
+        "sub": "#4c566a",
+        "subAlt": "#3b4252",
+        "text": "#eceff4",
+        "error": "#bf616a",
+        "errorExtra": "#d08770"
+      }
+    },
+    {
+      "id": "monokai",
+      "name": "Monokai",
+      "category": "dark",
+      "colors": {
+        "bg": "#272822",
+        "main": "#f92672",
+        "caret": "#f8f8f2",
+        "sub": "#75715e",
+        "subAlt": "#1e1f1a",
+        "text": "#f8f8f2",
+        "error": "#f92672",
+        "errorExtra": "#ff6188"
+      }
+    },
+    {
+      "id": "solarized-dark",
+      "name": "Solarized Dark",
+      "category": "dark",
+      "colors": {
+        "bg": "#002b36",
+        "main": "#b58900",
+        "caret": "#839496",
+        "sub": "#586e75",
+        "subAlt": "#073642",
+        "text": "#839496",
+        "error": "#dc322f",
+        "errorExtra": "#cb4b16"
+      }
+    },
+    {
+      "id": "gruvbox-dark",
+      "name": "Gruvbox Dark",
+      "category": "dark",
+      "colors": {
+        "bg": "#282828",
+        "main": "#fabd2f",
+        "caret": "#ebdbb2",
+        "sub": "#665c54",
+        "subAlt": "#1d2021",
+        "text": "#ebdbb2",
+        "error": "#fb4934",
+        "errorExtra": "#cc241d"
+      }
+    },
+    {
+      "id": "catppuccin-mocha",
+      "name": "Catppuccin Mocha",
+      "category": "dark",
+      "colors": {
+        "bg": "#1e1e2e",
+        "main": "#cba6f7",
+        "caret": "#f5e0dc",
+        "sub": "#6c7086",
+        "subAlt": "#181825",
+        "text": "#cdd6f4",
+        "error": "#f38ba8",
+        "errorExtra": "#eba0ac"
+      }
+    },
+    {
+      "id": "tokyo-night",
+      "name": "Tokyo Night",
+      "category": "dark",
+      "colors": {
+        "bg": "#1a1b26",
+        "main": "#7aa2f7",
+        "caret": "#c0caf5",
+        "sub": "#565f89",
+        "subAlt": "#16161e",
+        "text": "#a9b1d6",
+        "error": "#f7768e",
+        "errorExtra": "#ff9e64"
+      }
+    },
+    {
+      "id": "github-dark",
+      "name": "GitHub Dark",
+      "category": "dark",
+      "colors": {
+        "bg": "#0d1117",
+        "main": "#58a6ff",
+        "caret": "#c9d1d9",
+        "sub": "#484f58",
+        "subAlt": "#161b22",
+        "text": "#c9d1d9",
+        "error": "#f85149",
+        "errorExtra": "#da3633"
+      }
+    },
+    {
+      "id": "one-dark",
+      "name": "One Dark",
+      "category": "dark",
+      "colors": {
+        "bg": "#282c34",
+        "main": "#61afef",
+        "caret": "#abb2bf",
+        "sub": "#5c6370",
+        "subAlt": "#21252b",
+        "text": "#abb2bf",
+        "error": "#e06c75",
+        "errorExtra": "#be5046"
+      }
+    },
+    {
+      "id": "cyber",
+      "name": "Cyber",
+      "category": "dark",
+      "colors": {
+        "bg": "#0a0a0f",
+        "main": "#00ff9f",
+        "caret": "#00ff9f",
+        "sub": "#404060",
+        "subAlt": "#06060a",
+        "text": "#d0d0ff",
+        "error": "#ff0055",
+        "errorExtra": "#ff3377"
+      }
+    },
+    {
+      "id": "midnight",
+      "name": "Midnight",
+      "category": "dark",
+      "colors": {
+        "bg": "#0f0f1a",
+        "main": "#a855f7",
+        "caret": "#e879f9",
+        "sub": "#3f3f5c",
+        "subAlt": "#0a0a12",
+        "text": "#e2e2f0",
+        "error": "#ef4444",
+        "errorExtra": "#dc2626"
+      }
+    },
+    {
+      "id": "ocean",
+      "name": "Ocean",
+      "category": "dark",
+      "colors": {
+        "bg": "#0c1821",
+        "main": "#22d3ee",
+        "caret": "#67e8f9",
+        "sub": "#1e3a4c",
+        "subAlt": "#071018",
+        "text": "#cbd5e1",
+        "error": "#f43f5e",
+        "errorExtra": "#e11d48"
+      }
+    },
+    {
+      "id": "matrix",
+      "name": "Matrix",
+      "category": "dark",
+      "colors": {
+        "bg": "#0d0d0d",
+        "main": "#00ff00",
+        "caret": "#00ff00",
+        "sub": "#003300",
+        "subAlt": "#050505",
+        "text": "#00cc00",
+        "error": "#ff0000",
+        "errorExtra": "#cc0000"
+      }
+    }
+  ]
+}

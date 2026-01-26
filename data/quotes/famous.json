@@ -1,0 +1,364 @@
+{
+  "quotes": [
+    {
+      "id": "1",
+      "text": "Call me Ishmael. Some years ago, never mind how long precisely, having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world.",
+      "source": "Herman Melville, Moby-Dick",
+      "length": "long"
+    },
+    {
+      "id": "2",
+      "text": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair.",
+      "source": "Charles Dickens, A Tale of Two Cities",
+      "length": "thicc"
+    },
+    {
+      "id": "3",
+      "text": "All happy families are alike; each unhappy family is unhappy in its own way.",
+      "source": "Leo Tolstoy, Anna Karenina",
+      "length": "short"
+    },
+    {
+      "id": "4",
+      "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+      "source": "Jane Austen, Pride and Prejudice",
+      "length": "medium"
+    },
+    {
+      "id": "5",
+      "text": "In the beginning God created the heavens and the earth. And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.",
+      "source": "The Bible, Genesis",
+      "length": "long"
+    },
+    {
+      "id": "6",
+      "text": "To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or to take arms against a sea of troubles, and by opposing end them.",
+      "source": "William Shakespeare, Hamlet",
+      "length": "long"
+    },
+    {
+      "id": "7",
+      "text": "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost.",
+      "source": "J.R.R. Tolkien, The Fellowship of the Ring",
+      "length": "medium"
+    },
+    {
+      "id": "8",
+      "text": "In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole, filled with the ends of worms and an oozy smell, nor yet a dry, bare, sandy hole with nothing in it to sit down on or to eat: it was a hobbit-hole, and that means comfort.",
+      "source": "J.R.R. Tolkien, The Hobbit",
+      "length": "thicc"
+    },
+    {
+      "id": "9",
+      "text": "It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors of Victory Mansions.",
+      "source": "George Orwell, 1984",
+      "length": "long"
+    },
+    {
+      "id": "10",
+      "text": "War is peace. Freedom is slavery. Ignorance is strength.",
+      "source": "George Orwell, 1984",
+      "length": "short"
+    },
+    {
+      "id": "11",
+      "text": "All animals are equal, but some animals are more equal than others.",
+      "source": "George Orwell, Animal Farm",
+      "length": "short"
+    },
+    {
+      "id": "12",
+      "text": "The only thing we have to fear is fear itself.",
+      "source": "Franklin D. Roosevelt",
+      "length": "short"
+    },
+    {
+      "id": "13",
+      "text": "Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.",
+      "source": "Abraham Lincoln, Gettysburg Address",
+      "length": "long"
+    },
+    {
+      "id": "14",
+      "text": "I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character.",
+      "source": "Martin Luther King Jr.",
+      "length": "long"
+    },
+    {
+      "id": "15",
+      "text": "Mr. and Mrs. Dursley, of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much. They were the last people you'd expect to be involved in anything strange or mysterious.",
+      "source": "J.K. Rowling, Harry Potter and the Sorcerer's Stone",
+      "length": "long"
+    },
+    {
+      "id": "16",
+      "text": "Happy families are all alike; every unhappy family is unhappy in its own way.",
+      "source": "Leo Tolstoy, Anna Karenina",
+      "length": "short"
+    },
+    {
+      "id": "17",
+      "text": "It was a pleasure to burn. It was a special pleasure to see things eaten, to see things blackened and changed.",
+      "source": "Ray Bradbury, Fahrenheit 451",
+      "length": "medium"
+    },
+    {
+      "id": "18",
+      "text": "The man in black fled across the desert, and the gunslinger followed.",
+      "source": "Stephen King, The Dark Tower",
+      "length": "short"
+    },
+    {
+      "id": "19",
+      "text": "Far out in the uncharted backwaters of the unfashionable end of the western spiral arm of the Galaxy lies a small unregarded yellow sun. Orbiting this at a distance of roughly ninety-two million miles is an utterly insignificant little blue-green planet.",
+      "source": "Douglas Adams, The Hitchhiker's Guide to the Galaxy",
+      "length": "thicc"
+    },
+    {
+      "id": "20",
+      "text": "In the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.",
+      "source": "Douglas Adams, The Restaurant at the End of the Universe",
+      "length": "medium"
+    },
+    {
+      "id": "21",
+      "text": "The answer to the ultimate question of life, the universe, and everything is forty-two.",
+      "source": "Douglas Adams, The Hitchhiker's Guide to the Galaxy",
+      "length": "medium"
+    },
+    {
+      "id": "22",
+      "text": "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+      "source": "J.K. Rowling, Harry Potter and the Chamber of Secrets",
+      "length": "medium"
+    },
+    {
+      "id": "23",
+      "text": "Happiness can be found, even in the darkest of times, if one only remembers to turn on the light.",
+      "source": "J.K. Rowling, Harry Potter and the Prisoner of Azkaban",
+      "length": "medium"
+    },
+    {
+      "id": "24",
+      "text": "Do not pity the dead, Harry. Pity the living, and, above all those who live without love.",
+      "source": "J.K. Rowling, Harry Potter and the Deathly Hallows",
+      "length": "medium"
+    },
+    {
+      "id": "25",
+      "text": "After all this time? Always.",
+      "source": "J.K. Rowling, Harry Potter and the Deathly Hallows",
+      "length": "short"
+    },
+    {
+      "id": "26",
+      "text": "So we beat on, boats against the current, borne back ceaselessly into the past.",
+      "source": "F. Scott Fitzgerald, The Great Gatsby",
+      "length": "short"
+    },
+    {
+      "id": "27",
+      "text": "In my younger and more vulnerable years my father gave me some advice that I've been turning over in my mind ever since. Whenever you feel like criticizing anyone, he told me, just remember that all the people in this world haven't had the advantages that you've had.",
+      "source": "F. Scott Fitzgerald, The Great Gatsby",
+      "length": "thicc"
+    },
+    {
+      "id": "28",
+      "text": "I took a deep breath and listened to the old brag of my heart. I am, I am, I am.",
+      "source": "Sylvia Plath, The Bell Jar",
+      "length": "medium"
+    },
+    {
+      "id": "29",
+      "text": "Whatever our souls are made of, his and mine are the same.",
+      "source": "Emily Bronte, Wuthering Heights",
+      "length": "short"
+    },
+    {
+      "id": "30",
+      "text": "I am no bird; and no net ensnares me: I am a free human being with an independent will.",
+      "source": "Charlotte Bronte, Jane Eyre",
+      "length": "medium"
+    },
+    {
+      "id": "31",
+      "text": "There is some good in this world, and it's worth fighting for.",
+      "source": "J.R.R. Tolkien, The Two Towers",
+      "length": "short"
+    },
+    {
+      "id": "32",
+      "text": "Even the smallest person can change the course of the future.",
+      "source": "J.R.R. Tolkien, The Fellowship of the Ring",
+      "length": "short"
+    },
+    {
+      "id": "33",
+      "text": "I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived.",
+      "source": "Henry David Thoreau, Walden",
+      "length": "long"
+    },
+    {
+      "id": "34",
+      "text": "The mass of men lead lives of quiet desperation. What is called resignation is confirmed desperation.",
+      "source": "Henry David Thoreau, Walden",
+      "length": "medium"
+    },
+    {
+      "id": "35",
+      "text": "I celebrate myself, and sing myself, and what I assume you shall assume, for every atom belonging to me as good belongs to you.",
+      "source": "Walt Whitman, Song of Myself",
+      "length": "medium"
+    },
+    {
+      "id": "36",
+      "text": "Do I contradict myself? Very well then I contradict myself. I am large, I contain multitudes.",
+      "source": "Walt Whitman, Song of Myself",
+      "length": "medium"
+    },
+    {
+      "id": "37",
+      "text": "Two roads diverged in a wood, and I took the one less traveled by, and that has made all the difference.",
+      "source": "Robert Frost, The Road Not Taken",
+      "length": "medium"
+    },
+    {
+      "id": "38",
+      "text": "I have measured out my life with coffee spoons.",
+      "source": "T.S. Eliot, The Love Song of J. Alfred Prufrock",
+      "length": "short"
+    },
+    {
+      "id": "39",
+      "text": "This is the way the world ends. Not with a bang but a whimper.",
+      "source": "T.S. Eliot, The Hollow Men",
+      "length": "short"
+    },
+    {
+      "id": "40",
+      "text": "Because I could not stop for Death, he kindly stopped for me; the carriage held but just ourselves and Immortality.",
+      "source": "Emily Dickinson",
+      "length": "medium"
+    },
+    {
+      "id": "41",
+      "text": "Hope is the thing with feathers that perches in the soul, and sings the tune without the words, and never stops at all.",
+      "source": "Emily Dickinson",
+      "length": "medium"
+    },
+    {
+      "id": "42",
+      "text": "One must imagine Sisyphus happy.",
+      "source": "Albert Camus, The Myth of Sisyphus",
+      "length": "short"
+    },
+    {
+      "id": "43",
+      "text": "Man is condemned to be free; because once thrown into the world, he is responsible for everything he does.",
+      "source": "Jean-Paul Sartre",
+      "length": "medium"
+    },
+    {
+      "id": "44",
+      "text": "Hell is other people.",
+      "source": "Jean-Paul Sartre, No Exit",
+      "length": "short"
+    },
+    {
+      "id": "45",
+      "text": "The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.",
+      "source": "Albert Camus",
+      "length": "medium"
+    },
+    {
+      "id": "46",
+      "text": "In the depth of winter, I finally learned that within me there lay an invincible summer.",
+      "source": "Albert Camus",
+      "length": "medium"
+    },
+    {
+      "id": "47",
+      "text": "The only true voyage of discovery, the only fountain of Eternal Youth, would be not to visit strange lands but to possess other eyes.",
+      "source": "Marcel Proust, In Search of Lost Time",
+      "length": "medium"
+    },
+    {
+      "id": "48",
+      "text": "For a long time I went to bed early. Sometimes, when I had put out my candle, my eyes would close so quickly that I had not even time to say to myself: I am falling asleep.",
+      "source": "Marcel Proust, Swann's Way",
+      "length": "long"
+    },
+    {
+      "id": "49",
+      "text": "As Gregor Samsa awoke one morning from uneasy dreams he found himself transformed in his bed into a gigantic insect.",
+      "source": "Franz Kafka, The Metamorphosis",
+      "length": "medium"
+    },
+    {
+      "id": "50",
+      "text": "Someone must have slandered Josef K., for one morning, without having done anything truly wrong, he was arrested.",
+      "source": "Franz Kafka, The Trial",
+      "length": "medium"
+    },
+    {
+      "id": "51",
+      "text": "Many years later, as he faced the firing squad, Colonel Aureliano Buendia was to remember that distant afternoon when his father took him to discover ice.",
+      "source": "Gabriel Garcia Marquez, One Hundred Years of Solitude",
+      "length": "long"
+    },
+    {
+      "id": "52",
+      "text": "Ships at a distance have every man's wish on board. For some they come in with the tide. For others they sail forever on the horizon.",
+      "source": "Zora Neale Hurston, Their Eyes Were Watching God",
+      "length": "medium"
+    },
+    {
+      "id": "53",
+      "text": "Mother died today. Or maybe yesterday, I don't know. I had a telegram from the home: Mother passed away. Funeral tomorrow. Yours sincerely. That doesn't mean anything.",
+      "source": "Albert Camus, The Stranger",
+      "length": "long"
+    },
+    {
+      "id": "54",
+      "text": "You don't have to burn books to destroy a culture. Just get people to stop reading them.",
+      "source": "Ray Bradbury",
+      "length": "medium"
+    },
+    {
+      "id": "55",
+      "text": "There are more things in heaven and earth, Horatio, than are dreamt of in your philosophy.",
+      "source": "William Shakespeare, Hamlet",
+      "length": "medium"
+    },
+    {
+      "id": "56",
+      "text": "All the world's a stage, and all the men and women merely players. They have their exits and their entrances, and one man in his time plays many parts.",
+      "source": "William Shakespeare, As You Like It",
+      "length": "medium"
+    },
+    {
+      "id": "57",
+      "text": "What's in a name? That which we call a rose by any other name would smell as sweet.",
+      "source": "William Shakespeare, Romeo and Juliet",
+      "length": "medium"
+    },
+    {
+      "id": "58",
+      "text": "The fault, dear Brutus, is not in our stars, but in ourselves, that we are underlings.",
+      "source": "William Shakespeare, Julius Caesar",
+      "length": "medium"
+    },
+    {
+      "id": "59",
+      "text": "If music be the food of love, play on, give me excess of it; that surfeiting, the appetite may sicken, and so die.",
+      "source": "William Shakespeare, Twelfth Night",
+      "length": "medium"
+    },
+    {
+      "id": "60",
+      "text": "Cowards die many times before their deaths; the valiant never taste of death but once. Of all the wonders that I yet have heard, it seems to me most strange that men should fear, seeing that death, a necessary end, will come when it will come.",
+      "source": "William Shakespeare, Julius Caesar",
+      "length": "thicc"
+    }
+  ]
+}
