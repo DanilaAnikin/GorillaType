@@ -6,6 +6,7 @@ import { UserMinus, MessageCircle, Trophy, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { useUIStore } from "@/store/ui-store";
 import type { Friend } from "./types";
 
 /**
@@ -45,6 +46,52 @@ export function FriendsList({
   removingFriendId,
   className,
 }: FriendsListProps) {
+  const openDirectMessage = useUIStore((state) => state.openDirectMessage);
+  const [creatingDMForFriend, setCreatingDMForFriend] = React.useState<string | null>(null);
+
+  // Handle starting a DM with a friend
+  const handleStartDM = async (friendship: Friend) => {
+    const friend = friendship.friend;
+    setCreatingDMForFriend(friend.id);
+
+    try {
+      // Create or get existing DM room
+      const requestBody = {
+        type: "direct",
+        participantId: friend.id,
+      };
+      console.log("[DM] Creating chat room with request:", requestBody);
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log("[DM] API response:", { status: response.status, data });
+
+      if (!response.ok) {
+        const errorMessage = data.details || data.error || "Failed to create chat room";
+        console.error("[DM] API error:", errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      if (!data.room?.id) {
+        console.error("[DM] Invalid response - missing room.id:", data);
+        throw new Error("Invalid response from server - missing room data");
+      }
+
+      const friendName = friend.displayName || friend.username || "Friend";
+      openDirectMessage(data.room.id, friendName);
+    } catch (err) {
+      console.error("[DM] Error creating DM:", err);
+      // Could add a notification here
+    } finally {
+      setCreatingDMForFriend(null);
+    }
+  };
+
   if (friends.length === 0) {
     return (
       <div
@@ -118,6 +165,20 @@ export function FriendsList({
 
             {/* Actions */}
             <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+              {/* Message */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleStartDM(friendship)}
+                disabled={isLoading || creatingDMForFriend === friend.id}
+                loading={creatingDMForFriend === friend.id}
+                leftIcon={<MessageCircle className="w-4 h-4" />}
+                className="text-main hover:text-main"
+                aria-label="Send message"
+              >
+                Message
+              </Button>
+
               {/* View Profile */}
               <Link
                 href={`/profile/${friend.username}`}

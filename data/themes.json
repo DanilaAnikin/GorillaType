@@ -224,6 +224,306 @@
         "error": "#ff0000",
         "errorExtra": "#cc0000"
       }
+    },
+    {
+      "id": "8008",
+      "name": "8008",
+      "category": "dark",
+      "colors": {
+        "bg": "#333a45",
+        "main": "#f44c7f",
+        "caret": "#f44c7f",
+        "sub": "#939eae",
+        "subAlt": "#2d343f",
+        "text": "#e9ecf0",
+        "error": "#da3333",
+        "errorExtra": "#791717"
+      }
+    },
+    {
+      "id": "botanical",
+      "name": "Botanical",
+      "category": "dark",
+      "colors": {
+        "bg": "#7b9c98",
+        "main": "#eaf1f3",
+        "caret": "#eaf1f3",
+        "sub": "#495755",
+        "subAlt": "#6f8e8a",
+        "text": "#eaf1f3",
+        "error": "#f6c9b4",
+        "errorExtra": "#e8a087"
+      }
+    },
+    {
+      "id": "vaporwave",
+      "name": "Vaporwave",
+      "category": "dark",
+      "colors": {
+        "bg": "#3b3561",
+        "main": "#f7f1e3",
+        "caret": "#6cf7d9",
+        "sub": "#7c71ad",
+        "subAlt": "#322d52",
+        "text": "#f7f1e3",
+        "error": "#e4467a",
+        "errorExtra": "#c73a66"
+      }
+    },
+    {
+      "id": "laser",
+      "name": "Laser",
+      "category": "dark",
+      "colors": {
+        "bg": "#221b44",
+        "main": "#0beeb5",
+        "caret": "#0beeb5",
+        "sub": "#4b3a86",
+        "subAlt": "#1a1436",
+        "text": "#dbe7e8",
+        "error": "#f67599",
+        "errorExtra": "#e7375a"
+      }
+    },
+    {
+      "id": "olive",
+      "name": "Olive",
+      "category": "dark",
+      "colors": {
+        "bg": "#4a4a40",
+        "main": "#cccc99",
+        "caret": "#cccc99",
+        "sub": "#7a7a66",
+        "subAlt": "#3f3f37",
+        "text": "#cccc99",
+        "error": "#cc6666",
+        "errorExtra": "#994d4d"
+      }
+    },
+    {
+      "id": "superuser",
+      "name": "Superuser",
+      "category": "dark",
+      "colors": {
+        "bg": "#262a33",
+        "main": "#43ffaf",
+        "caret": "#43ffaf",
+        "sub": "#626e87",
+        "subAlt": "#1f232b",
+        "text": "#e5f7ef",
+        "error": "#ff5f5f",
+        "errorExtra": "#d63434"
+      }
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal",
+      "category": "dark",
+      "colors": {
+        "bg": "#1e1e1e",
+        "main": "#4af626",
+        "caret": "#4af626",
+        "sub": "#3a5134",
+        "subAlt": "#171717",
+        "text": "#0ccc68",
+        "error": "#ff3a3a",
+        "errorExtra": "#c62222"
+      }
+    },
+    {
+      "id": "nautilus",
+      "name": "Nautilus",
+      "category": "dark",
+      "colors": {
+        "bg": "#132237",
+        "main": "#ebc06c",
+        "caret": "#ebc06c",
+        "sub": "#3f5a7d",
+        "subAlt": "#0d1926",
+        "text": "#87b7c7",
+        "error": "#e34040",
+        "errorExtra": "#b83030"
+      }
+    },
+    {
+      "id": "pulse",
+      "name": "Pulse",
+      "category": "dark",
+      "colors": {
+        "bg": "#181818",
+        "main": "#17b8bd",
+        "caret": "#17b8bd",
+        "sub": "#53565a",
+        "subAlt": "#101010",
+        "text": "#e5e5e5",
+        "error": "#e06c75",
+        "errorExtra": "#c24e58"
+      }
+    },
+    {
+      "id": "camping",
+      "name": "Camping",
+      "category": "dark",
+      "colors": {
+        "bg": "#faf4e5",
+        "main": "#618c6d",
+        "caret": "#618c6d",
+        "sub": "#bc9f79",
+        "subAlt": "#ede6d5",
+        "text": "#312e25",
+        "error": "#c85a4e",
+        "errorExtra": "#a14438"
+      }
+    },
+    {
+      "id": "hammerhead",
+      "name": "Hammerhead",
+      "category": "dark",
+      "colors": {
+        "bg": "#030613",
+        "main": "#4fcdb9",
+        "caret": "#4fcdb9",
+        "sub": "#1a3c47",
+        "subAlt": "#020510",
+        "text": "#e2f1f5",
+        "error": "#f05454",
+        "errorExtra": "#c93c3c"
+      }
+    },
+    {
+      "id": "blueberry",
+      "name": "Blueberry",
+      "category": "dark",
+      "colors": {
+        "bg": "#1b2738",
+        "main": "#7eb8da",
+        "caret": "#7eb8da",
+        "sub": "#4a6382",
+        "subAlt": "#141d2b",
+        "text": "#abc7db",
+        "error": "#d9586e",
+        "errorExtra": "#b3475a"
+      }
+    },
+    {
+      "id": "strawberry",
+      "name": "Strawberry",
+      "category": "light",
+      "colors": {
+        "bg": "#f6e4e3",
+        "main": "#c2474e",
+        "caret": "#c2474e",
+        "sub": "#c98e8b",
+        "subAlt": "#ecd4d3",
+        "text": "#4a1f22",
+        "error": "#9b1f26",
+        "errorExtra": "#701519"
+      }
+    },
+    {
+      "id": "mint",
+      "name": "Mint",
+      "category": "light",
+      "colors": {
+        "bg": "#e5f2e4",
+        "main": "#3e7d59",
+        "caret": "#3e7d59",
+        "sub": "#8ab096",
+        "subAlt": "#d4e8d3",
+        "text": "#1a3d2a",
+        "error": "#c5494e",
+        "errorExtra": "#9a3a3e"
+      }
+    },
+    {
+      "id": "moonlight",
+      "name": "Moonlight",
+      "category": "dark",
+      "colors": {
+        "bg": "#222436",
+        "main": "#82aaff",
+        "caret": "#c8d3f5",
+        "sub": "#636da6",
+        "subAlt": "#1e2030",
+        "text": "#c8d3f5",
+        "error": "#ff757f",
+        "errorExtra": "#ff5370"
+      }
+    },
+    {
+      "id": "papercolor",
+      "name": "Papercolor",
+      "category": "light",
+      "colors": {
+        "bg": "#eeeeee",
+        "main": "#005f87",
+        "caret": "#005f87",
+        "sub": "#878787",
+        "subAlt": "#dedede",
+        "text": "#444444",
+        "error": "#af0000",
+        "errorExtra": "#870000"
+      }
+    },
+    {
+      "id": "sonokai",
+      "name": "Sonokai",
+      "category": "dark",
+      "colors": {
+        "bg": "#2c2e34",
+        "main": "#9ed072",
+        "caret": "#e2e2e3",
+        "sub": "#595f6f",
+        "subAlt": "#232428",
+        "text": "#e2e2e3",
+        "error": "#fc5d7c",
+        "errorExtra": "#f39660"
+      }
+    },
+    {
+      "id": "material",
+      "name": "Material",
+      "category": "dark",
+      "colors": {
+        "bg": "#263238",
+        "main": "#80cbc4",
+        "caret": "#ffcc00",
+        "sub": "#546e7a",
+        "subAlt": "#1e272c",
+        "text": "#eceff1",
+        "error": "#f07178",
+        "errorExtra": "#ff5370"
+      }
+    },
+    {
+      "id": "oblivion",
+      "name": "Oblivion",
+      "category": "dark",
+      "colors": {
+        "bg": "#313131",
+        "main": "#93c763",
+        "caret": "#93c763",
+        "sub": "#5c5c5c",
+        "subAlt": "#282828",
+        "text": "#ebebeb",
+        "error": "#ec7600",
+        "errorExtra": "#c46200"
+      }
+    },
+    {
+      "id": "joker",
+      "name": "Joker",
+      "category": "dark",
+      "colors": {
+        "bg": "#1a0e26",
+        "main": "#00ff84",
+        "caret": "#00ff84",
+        "sub": "#5c2b80",
+        "subAlt": "#14081d",
+        "text": "#d4beff",
+        "error": "#ff1744",
+        "errorExtra": "#d10036"
+      }
     }
   ]
 }

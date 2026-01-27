@@ -365,29 +365,68 @@ export async function POST(request: NextRequest) {
         .eq('id', user.id)
         .single();
 
-      const leaderboardData = {
-        user_id: user.id,
-        result_id: result.id,
-        test_mode: mode,
-        test_duration: timeLimit || null,
-        test_word_count: wordLimit || null,
-        test_language: language,
-        username: userProfile?.username || 'Anonymous',
-        wpm,
-        accuracy,
-        country_code: userProfile?.country_code || null,
-        achieved_at: new Date().toISOString(),
-      };
-
-      const { error: lbError } = await supabase
+      // Build the query to find existing leaderboard entry
+      // We need to handle NULL values properly since the unique index uses COALESCE
+      let existingEntryQuery = supabase
         .from('leaderboards')
-        .upsert(leaderboardData, {
-          onConflict: 'user_id,test_mode,test_duration,test_word_count,test_language',
-        });
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('test_mode', mode)
+        .eq('test_language', language);
 
-      if (lbError) {
-        // Log but don't fail the request - the result was saved successfully
-        console.error('Error upserting leaderboard entry:', lbError);
+      // Handle NULL values for test_duration and test_word_count
+      if (timeLimit) {
+        existingEntryQuery = existingEntryQuery.eq('test_duration', timeLimit);
+      } else {
+        existingEntryQuery = existingEntryQuery.is('test_duration', null);
+      }
+
+      if (wordLimit) {
+        existingEntryQuery = existingEntryQuery.eq('test_word_count', wordLimit);
+      } else {
+        existingEntryQuery = existingEntryQuery.is('test_word_count', null);
+      }
+
+      const { data: existingEntry } = await existingEntryQuery.maybeSingle();
+
+      if (existingEntry) {
+        // Update existing entry
+        const { error: lbError } = await supabase
+          .from('leaderboards')
+          .update({
+            result_id: result.id,
+            username: userProfile?.username || 'Anonymous',
+            wpm,
+            accuracy,
+            country_code: userProfile?.country_code || null,
+            achieved_at: new Date().toISOString(),
+          })
+          .eq('id', existingEntry.id);
+
+        if (lbError) {
+          console.error('Error updating leaderboard entry:', lbError);
+        }
+      } else {
+        // Insert new entry
+        const { error: lbError } = await supabase
+          .from('leaderboards')
+          .insert({
+            user_id: user.id,
+            result_id: result.id,
+            test_mode: mode,
+            test_duration: timeLimit || null,
+            test_word_count: wordLimit || null,
+            test_language: language,
+            username: userProfile?.username || 'Anonymous',
+            wpm,
+            accuracy,
+            country_code: userProfile?.country_code || null,
+            achieved_at: new Date().toISOString(),
+          });
+
+        if (lbError) {
+          console.error('Error inserting leaderboard entry:', lbError);
+        }
       }
     }
 

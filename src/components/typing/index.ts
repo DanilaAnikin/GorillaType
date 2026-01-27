@@ -5,6 +5,7 @@ export { TestConfigBar, type TestConfigBarProps } from './test-config-bar';
 export { LiveStats, type LiveStatsProps } from './live-stats';
 export { TimerDisplay, type TimerDisplayProps } from './timer-display';
 export { RestartButton, type RestartButtonProps } from './restart-button';
+export { Keymap, type KeymapProps } from './keymap';
 export { TypingTest, type TypingTestProps } from './typing-test';
 
 // Default export for convenience

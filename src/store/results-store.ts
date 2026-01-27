@@ -63,6 +63,9 @@ export interface ResultsState {
   results: TestResult[];
   personalBests: PersonalBest[];
 
+  // Weakspot tracking - cumulative missed keys across sessions
+  weakspotData: Record<string, number>;
+
   // Sync state
   pendingSync: string[]; // IDs of results not yet synced
   lastSyncAt: string | null;
@@ -82,6 +85,11 @@ export interface ResultsState {
   // Personal bests
   updatePersonalBest: (result: TestResult) => void;
   getPersonalBest: (mode: 'time' | 'words' | 'quote', duration: number, language: string) => PersonalBest | null;
+
+  // Weakspot actions
+  updateWeakspotData: (missedKeys: Record<string, number>) => void;
+  getTopWeakspots: (count: number) => string[];
+  resetWeakspotData: () => void;
 
   // Sync actions
   markSynced: (ids: string[]) => void;
@@ -111,6 +119,7 @@ export const useResultsStore = create<ResultsState>()(
       // Initial state
       results: [],
       personalBests: [],
+      weakspotData: {},
       pendingSync: [],
       lastSyncAt: null,
       isSyncing: false,
@@ -190,6 +199,26 @@ export const useResultsStore = create<ResultsState>()(
           (pb) => pb.mode === mode && pb.duration === duration && pb.language === language
         ) ?? null;
       },
+
+      // Weakspot actions - track cumulative missed keys across sessions
+      updateWeakspotData: (missedKeys) => set((state) => {
+        const newWeakspotData = { ...state.weakspotData };
+        for (const [key, count] of Object.entries(missedKeys)) {
+          newWeakspotData[key] = (newWeakspotData[key] || 0) + count;
+        }
+        return { weakspotData: newWeakspotData };
+      }),
+
+      getTopWeakspots: (count) => {
+        const { weakspotData } = get();
+        // Sort keys by miss count (descending) and return top N
+        return Object.entries(weakspotData)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, count)
+          .map(([key]) => key);
+      },
+
+      resetWeakspotData: () => set({ weakspotData: {} }),
 
       // Sync actions
       markSynced: (ids) => set((state) => ({
@@ -294,6 +323,7 @@ export const useResultsStore = create<ResultsState>()(
       partialize: (state) => ({
         results: state.results,
         personalBests: state.personalBests,
+        weakspotData: state.weakspotData,
         pendingSync: state.pendingSync,
         lastSyncAt: state.lastSyncAt,
       }),

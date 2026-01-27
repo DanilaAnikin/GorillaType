@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useState, useEffect } from 'react';
-import { useConfigStore, type CaretStyle, type SmoothCaret } from '@/store/config-store';
+import { useConfigStore, type CaretStyle, type SmoothCaret, type CaretAnimation } from '@/store/config-store';
 import { cn } from '@/lib/utils/cn';
 import { Switch } from '@/components/ui/switch';
 import { Caret } from '@/components/typing/caret';
@@ -21,6 +21,7 @@ const styleOptions: StyleOption[] = [
   { id: 'block', name: 'Block', description: 'Full character block' },
   { id: 'outline', name: 'Outline', description: 'Block outline only' },
   { id: 'underline', name: 'Underline', description: 'Horizontal underscore' },
+  { id: 'box', name: 'Box', description: 'Hollow box around character' },
 ];
 
 interface SpeedOption {
@@ -36,6 +37,19 @@ const speedOptions: SpeedOption[] = [
   { id: 'fast', name: 'Fast', description: '50ms transition' },
 ];
 
+interface AnimationOption {
+  id: CaretAnimation;
+  name: string;
+  description: string;
+}
+
+const animationOptions: AnimationOption[] = [
+  { id: 'blink', name: 'Blink', description: 'Standard blink on/off' },
+  { id: 'phase', name: 'Phase', description: 'Smooth fade in/out' },
+  { id: 'expand', name: 'Expand', description: 'Width expands/contracts' },
+  { id: 'solid', name: 'Solid', description: 'No animation, always visible' },
+];
+
 interface CaretSettingsProps {
   /** Additional class names */
   className?: string;
@@ -44,7 +58,7 @@ interface CaretSettingsProps {
 export const CaretSettings = memo(function CaretSettings({
   className = '',
 }: CaretSettingsProps) {
-  const { caret, setCaretStyle, setSmoothCaret } = useConfigStore();
+  const { caret, setCaretStyle, setSmoothCaret, setCaretAnimation } = useConfigStore();
   const [caretEnabled, setCaretEnabled] = useState(true);
   const [previewPosition, setPreviewPosition] = useState(0);
 
@@ -74,6 +88,10 @@ export const CaretSettings = memo(function CaretSettings({
 
   const handleSpeedSelect = (speedId: SmoothCaret) => {
     setSmoothCaret(speedId);
+  };
+
+  const handleAnimationSelect = (animationId: CaretAnimation) => {
+    setCaretAnimation(animationId);
   };
 
   const currentStyle = caretEnabled ? caret.style : 'off';
@@ -108,6 +126,44 @@ export const CaretSettings = memo(function CaretSettings({
                   )}
                 >
                   {style.name}
+                </span>
+                {isActive && (
+                  <Check className="absolute top-1 right-1 h-3 w-3 text-main" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Caret Animation Selection */}
+      <div className={cn(!caretEnabled && 'opacity-50 pointer-events-none')}>
+        <h4 className="text-sm font-medium text-text mb-3">Caret Animation</h4>
+        <div className="flex flex-wrap gap-2">
+          {animationOptions.map((animation) => {
+            const isActive = caret.animation === animation.id;
+            return (
+              <button
+                key={animation.id}
+                onClick={() => handleAnimationSelect(animation.id)}
+                disabled={!caretEnabled}
+                className={cn(
+                  'relative px-4 py-2 rounded-lg',
+                  'border-2 transition-all duration-200',
+                  'focus:outline-none focus:ring-2 focus:ring-main focus:ring-offset-2 focus:ring-offset-bg',
+                  isActive
+                    ? 'border-main bg-main/10'
+                    : 'border-sub/30 hover:border-sub bg-sub-alt/30'
+                )}
+                title={animation.description}
+              >
+                <span
+                  className={cn(
+                    'text-sm font-medium',
+                    isActive ? 'text-main' : 'text-text'
+                  )}
+                >
+                  {animation.name}
                 </span>
                 {isActive && (
                   <Check className="absolute top-1 right-1 h-3 w-3 text-main" />
@@ -200,7 +256,7 @@ export const CaretSettings = memo(function CaretSettings({
                     <Caret
                       style={caret.style}
                       smooth={caret.smoothCaret}
-                      blinkSpeed="medium"
+                      animation={caret.animation}
                       height={24}
                     />
                   </span>
@@ -220,7 +276,7 @@ export const CaretSettings = memo(function CaretSettings({
           <p className="mt-4 text-sm text-sub">
             {!caretEnabled
               ? 'Caret is disabled'
-              : `Style: ${caret.style} | Smooth: ${caret.smoothCaret}`}
+              : `Style: ${caret.style} | Animation: ${caret.animation} | Smooth: ${caret.smoothCaret}`}
           </p>
         </div>
       </div>
@@ -231,6 +287,12 @@ export const CaretSettings = memo(function CaretSettings({
           Style:{' '}
           <span className="text-text">
             {styleOptions.find((s) => s.id === currentStyle)?.name}
+          </span>
+        </span>
+        <span>
+          Animation:{' '}
+          <span className="text-text">
+            {animationOptions.find((a) => a.id === caret.animation)?.name}
           </span>
         </span>
         <span>

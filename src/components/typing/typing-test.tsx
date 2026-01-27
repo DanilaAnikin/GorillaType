@@ -5,9 +5,9 @@ import { cn } from '@/lib/utils/cn';
 import { useTypingStore } from '@/store/typing-store';
 import { useConfigStore } from '@/store/config-store';
 import { useUIStore } from '@/store/ui-store';
-import { useUserStore } from '@/store/user-store';
+import { useUserStore, selectDisplayName, selectAvatarUrl } from '@/store/user-store';
 import { useResultsStore, type TestResult, type PersonalBest } from '@/store/results-store';
-import { generateWords, generateQuote } from '@/lib/utils/word-generator';
+import { generateWords, generateQuote, generateWeakspotWords, generateBigramWords } from '@/lib/utils/word-generator';
 import { useSyncResults } from '@/lib/hooks/use-sync-results';
 import { useSound } from '@/lib/hooks/use-sound';
 
@@ -17,7 +17,8 @@ import { TestConfigBar } from './test-config-bar';
 import { LiveStats } from './live-stats';
 import { TimerDisplay } from './timer-display';
 import { RestartButton } from './restart-button';
-import { ResultsScreen } from '@/components/results';
+import { Keymap } from './keymap';
+import { ResultsScreen, ShareModal } from '@/components/results';
 
 export interface TypingTestProps {
   /** Callback when test completes */
@@ -44,6 +45,7 @@ export const TypingTest = memo(function TypingTest({
   const [isFocused, setIsFocused] = useState(false);
   const [currentResult, setCurrentResult] = useState<TestResult | null>(null);
   const [isNewPersonalBest, setIsNewPersonalBest] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   // Track Tab key state for Tab+Enter combination
   const tabPressedRef = useRef(false);
   const tabTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -57,9 +59,12 @@ export const TypingTest = memo(function TypingTest({
   const stats = useTypingStore((state) => state.stats);
   const wpmHistory = useTypingStore((state) => state.wpmHistory);
   const timeElapsed = useTypingStore((state) => state.timeElapsed);
+  const missedKeys = useTypingStore((state) => state.missedKeys);
   const initializeTest = useTypingStore((state) => state.initializeTest);
   const handleKeyPress = useTypingStore((state) => state.handleKeyPress);
   const handleBackspace = useTypingStore((state) => state.handleBackspace);
+  const handleDeleteWord = useTypingStore((state) => state.handleDeleteWord);
+  const handleDeleteLine = useTypingStore((state) => state.handleDeleteLine);
   const handleSpace = useTypingStore((state) => state.handleSpace);
   const resetTest = useTypingStore((state) => state.resetTest);
   const restartWithSameWords = useTypingStore((state) => state.restartWithSameWords);
@@ -96,14 +101,25 @@ export const TypingTest = memo(function TypingTest({
     setSoundEnabled((soundOnClick && clickSound !== 'off') || (soundOnError && errorSound !== 'off'));
   }, [soundVolume, soundOnClick, soundOnError, clickSound, errorSound, setSoundVolume, setSoundEnabled]);
 
+  // Funbox settings
+  const funboxMode = useConfigStore((state) => state.funbox.mode);
+
+  // Bigram settings
+  const bigramEnabled = useConfigStore((state) => state.bigram.enabled);
+  const bigramPairs = useConfigStore((state) => state.bigram.pairs);
+
   // Results store
   const addResult = useResultsStore((state) => state.addResult);
   const updatePersonalBest = useResultsStore((state) => state.updatePersonalBest);
   const getPersonalBest = useResultsStore((state) => state.getPersonalBest);
+  const updateWeakspotData = useResultsStore((state) => state.updateWeakspotData);
+  const getTopWeakspots = useResultsStore((state) => state.getTopWeakspots);
 
   // User store - for authenticated user info
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const userId = useUserStore((state) => state.user?.id);
+  const displayName = useUserStore(selectDisplayName);
+  const avatarUrl = useUserStore(selectAvatarUrl);
 
   // Sync results hook - for syncing to API when authenticated
   // Note: isSyncing could be used to show a sync indicator in the future
@@ -145,26 +161,48 @@ export const TypingTest = memo(function TypingTest({
     let generatedWords: string[];
     const wordGenLanguage = getWordGeneratorLanguage(language);
 
+    // Check if weakspot mode is enabled - will use special word generator
+    const useWeakspotGenerator = funboxMode === 'weakspot';
+    const weakspots = useWeakspotGenerator ? getTopWeakspots(10) : []; // Get top 10 weak characters
+
+    // Check if bigram mode is enabled - will use bigram word generator
+    const useBigramGenerator = bigramEnabled && bigramPairs.length > 0;
+
+    // Helper function to generate words based on current mode settings
+    const generateModeWords = (count: number): string[] => {
+      if (useWeakspotGenerator) {
+        return generateWeakspotWords(wordGenLanguage, count, weakspots, {
+          punctuation,
+          numbers,
+        });
+      } else if (useBigramGenerator) {
+        return generateBigramWords(bigramPairs, wordGenLanguage, count, {
+          punctuation,
+          numbers,
+        });
+      } else {
+        return generateWords(wordGenLanguage, count, {
+          punctuation,
+          numbers,
+        });
+      }
+    };
+
     switch (mode) {
       case 'time':
         // Generate enough words for the time limit
         wordCount = Math.ceil(time * 3); // ~3 words per second max typing speed
         duration = time;
-        generatedWords = generateWords(wordGenLanguage, wordCount, {
-          punctuation,
-          numbers,
-        });
+        generatedWords = generateModeWords(wordCount);
         break;
       case 'words':
         wordCount = words;
         duration = 0; // No time limit
-        generatedWords = generateWords(wordGenLanguage, wordCount, {
-          punctuation,
-          numbers,
-        });
+        generatedWords = generateModeWords(wordCount);
         break;
       case 'quote':
         // Generate a quote - quotes have their own punctuation, use configured quote length
+        // Note: Weakspot mode and Bigram mode don't apply to quote mode as we use predefined quotes
         const quote = generateQuote(quoteLength);
         // Split quote text into words, preserving punctuation attached to words
         generatedWords = quote.text.split(/\s+/).filter(word => word.length > 0);
@@ -174,22 +212,16 @@ export const TypingTest = memo(function TypingTest({
       case 'zen':
         wordCount = 200; // Lots of words for zen mode
         duration = 0;
-        generatedWords = generateWords(wordGenLanguage, wordCount, {
-          punctuation,
-          numbers,
-        });
+        generatedWords = generateModeWords(wordCount);
         break;
       default:
         wordCount = 50;
         duration = 30;
-        generatedWords = generateWords(wordGenLanguage, wordCount, {
-          punctuation,
-          numbers,
-        });
+        generatedWords = generateModeWords(wordCount);
     }
 
     initializeTest(generatedWords, duration, mode, wordCount);
-  }, [mode, time, words, language, quoteLength, punctuation, numbers, initializeTest, getWordGeneratorLanguage]);
+  }, [mode, time, words, language, quoteLength, punctuation, numbers, initializeTest, getWordGeneratorLanguage, funboxMode, getTopWeakspots, bigramEnabled, bigramPairs]);
 
   // Global keyboard shortcuts - works in all states including results screen
   useEffect(() => {
@@ -360,9 +392,29 @@ export const TypingTest = memo(function TypingTest({
         return;
       }
 
-      // Handle backspace
+      // Handle backspace with modifiers
       if (event.key === 'Backspace') {
         event.preventDefault();
+
+        // Cmd+Backspace (Mac) - delete line (reset all progress)
+        if (event.metaKey) {
+          handleDeleteLine();
+          if (soundOnClick && clickSound !== 'off') {
+            playClick();
+          }
+          return;
+        }
+
+        // Ctrl+Backspace or Alt+Backspace - delete word
+        if (event.ctrlKey || event.altKey) {
+          handleDeleteWord();
+          if (soundOnClick && clickSound !== 'off') {
+            playClick();
+          }
+          return;
+        }
+
+        // Regular backspace - delete single character
         handleBackspace();
         // Play click sound on backspace too
         if (soundOnClick && clickSound !== 'off') {
@@ -402,7 +454,7 @@ export const TypingTest = memo(function TypingTest({
         }
       }
     },
-    [status, handleKeyPress, handleBackspace, handleSpace, soundOnClick, soundOnError, clickSound, errorSound, playClick, playError]
+    [status, handleKeyPress, handleBackspace, handleDeleteWord, handleDeleteLine, handleSpace, soundOnClick, soundOnError, clickSound, errorSound, playClick, playError]
   );
 
   // Handle focus events
@@ -478,6 +530,12 @@ export const TypingTest = memo(function TypingTest({
       updatePersonalBest(result);
     }
 
+    // Update weakspot data with missed keys from this test
+    // This accumulates across all sessions to track historical weak spots
+    if (Object.keys(missedKeys).length > 0) {
+      updateWeakspotData(missedKeys);
+    }
+
     // Sync to API if authenticated (async, doesn't block UI)
     if (isAuthenticated && userId) {
       syncResult(result).then((syncResponse) => {
@@ -493,7 +551,7 @@ export const TypingTest = memo(function TypingTest({
     }
 
     onComplete?.();
-  }, [status, mode, time, words, language, difficulty, punctuation, numbers, stats, wpmHistory, timeElapsed, personalBest, addResult, updatePersonalBest, onComplete, isAuthenticated, userId, syncResult]);
+  }, [status, mode, time, words, language, difficulty, punctuation, numbers, stats, wpmHistory, timeElapsed, missedKeys, personalBest, addResult, updatePersonalBest, updateWeakspotData, onComplete, isAuthenticated, userId, syncResult]);
 
   // Restart handler - generates new words
   const handleRestart = useCallback(() => {
@@ -513,35 +571,16 @@ export const TypingTest = memo(function TypingTest({
     initTest();
   }, [resetTest, initTest]);
 
-  // Share handler
-  const handleShare = useCallback(async () => {
+  // Share handler - opens share modal
+  const handleShare = useCallback(() => {
     if (!currentResult) return;
+    setIsShareModalOpen(true);
+  }, [currentResult]);
 
-    const shareText = `I just got ${Math.round(currentResult.wpm)} WPM with ${currentResult.accuracy.toFixed(1)}% accuracy on GorillaType! ${isNewPersonalBest ? '(New Personal Best!)' : ''}`;
-
-    // Try native share API first (mobile)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'GorillaType Result',
-          text: shareText,
-          url: window.location.href,
-        });
-        return;
-      } catch {
-        // User cancelled or share failed, fall through to clipboard
-      }
-    }
-
-    // Fallback to clipboard
-    try {
-      await navigator.clipboard.writeText(shareText);
-      // Could show a toast notification here
-      alert('Result copied to clipboard!');
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-    }
-  }, [currentResult, isNewPersonalBest]);
+  // Close share modal handler
+  const handleCloseShareModal = useCallback(() => {
+    setIsShareModalOpen(false);
+  }, []);
 
   const isActive = status === 'running';
   const isFinished = status === 'finished';
@@ -566,14 +605,23 @@ export const TypingTest = memo(function TypingTest({
 
     // Use the full ResultsScreen component
     return (
-      <ResultsScreen
-        result={currentResult}
-        personalBest={personalBest}
-        isNewPersonalBest={isNewPersonalBest}
-        onNextTest={handleRestart}
-        onShare={handleShare}
-        className={className}
-      />
+      <>
+        <ResultsScreen
+          result={currentResult}
+          personalBest={personalBest}
+          isNewPersonalBest={isNewPersonalBest}
+          onNextTest={handleRestart}
+          onShare={handleShare}
+          className={className}
+        />
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={handleCloseShareModal}
+          result={currentResult}
+          username={isAuthenticated ? displayName : null}
+          avatarUrl={avatarUrl}
+        />
+      </>
     );
   }
 
@@ -627,40 +675,43 @@ export const TypingTest = memo(function TypingTest({
       {/* Word display */}
       <div className="relative">
         <WordDisplay showAllLines={showAllLines} />
-
-        {/* Focus lost indicator - shown when input loses focus during active test */}
-        {!isFocused && (status === 'running' || status === 'waiting') && (
-          <div
-            className="absolute inset-x-0 bottom-0 flex items-center justify-center py-2 cursor-pointer"
-            onClick={handleContainerClick}
-          >
-            <p className="text-sub text-sm animate-pulse">
-              Click here to continue typing
-            </p>
-          </div>
-        )}
-
-        {/* Focus hint - shown when test hasn't started yet and focused */}
-        {isFocused && (status === 'idle' || status === 'waiting') ? (
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center py-2">
-            <p className="text-sub text-sm animate-pulse">
-              Start typing to begin
-            </p>
-          </div>
-        ) : null}
-
-        {/* Initial focus hint - shown when not focused and test not started */}
-        {!isFocused && status === 'idle' ? (
-          <div
-            className="absolute inset-x-0 bottom-0 flex items-center justify-center py-2 cursor-pointer"
-            onClick={handleContainerClick}
-          >
-            <p className="text-sub text-sm animate-pulse">
-              Click here or start typing to begin
-            </p>
-          </div>
-        ) : null}
       </div>
+
+      {/* Focus lost indicator - shown when input loses focus during active test */}
+      {!isFocused && (status === 'running' || status === 'waiting') && (
+        <div
+          className="flex items-center justify-center py-2 cursor-pointer"
+          onClick={handleContainerClick}
+        >
+          <p className="text-sub text-sm animate-pulse">
+            Click here to continue typing
+          </p>
+        </div>
+      )}
+
+      {/* Focus hint - shown when test hasn't started yet and focused */}
+      {isFocused && (status === 'idle' || status === 'waiting') ? (
+        <div className="flex items-center justify-center py-2">
+          <p className="text-sub text-sm animate-pulse">
+            Start typing to begin
+          </p>
+        </div>
+      ) : null}
+
+      {/* Initial focus hint - shown when not focused and test not started */}
+      {!isFocused && status === 'idle' ? (
+        <div
+          className="flex items-center justify-center py-2 cursor-pointer"
+          onClick={handleContainerClick}
+        >
+          <p className="text-sub text-sm animate-pulse">
+            Click here or start typing to begin
+          </p>
+        </div>
+      ) : null}
+
+      {/* Visual keyboard - shows next key and pressed keys */}
+      <Keymap />
 
       {/* Restart button */}
       <div

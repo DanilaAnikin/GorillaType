@@ -11,6 +11,7 @@ import {
   Zap,
   Unlock,
   Space,
+  Ghost,
 } from 'lucide-react';
 
 type StopOnError = 'off' | 'word' | 'letter';
@@ -53,12 +54,15 @@ export const BehaviorSettings = memo(function BehaviorSettings({
 }: BehaviorSettingsProps) {
   const {
     behavior,
+    pacemaker,
     setStopOnError,
     setConfidenceMode,
     toggleBlindMode,
     toggleLazyMode,
     toggleFreedomMode,
     toggleStrictSpace,
+    setPacemakerEnabled,
+    setPacemakerWpm,
   } = useConfigStore();
 
   const toggleSettings: ToggleSetting[] = [
@@ -184,6 +188,92 @@ export const BehaviorSettings = memo(function BehaviorSettings({
         </p>
       </div>
 
+      {/* Pacemaker Settings */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Ghost className="h-4 w-4 text-main" />
+          <h4 className="text-sm font-medium text-text">Pacemaker</h4>
+        </div>
+        <p className="text-sub text-sm mb-3">
+          Race against a ghost caret that moves at your target WPM
+        </p>
+        <div className="space-y-4">
+          {/* Enable/Disable Toggle */}
+          <div
+            className={cn(
+              'flex items-center justify-between p-4 rounded-lg',
+              'transition-colors duration-200',
+              pacemaker.enabled ? 'bg-main/10' : 'bg-sub-alt/30'
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <Ghost
+                className={cn(
+                  'h-5 w-5',
+                  pacemaker.enabled ? 'text-main' : 'text-sub'
+                )}
+              />
+              <div>
+                <h5
+                  className={cn(
+                    'font-medium',
+                    pacemaker.enabled ? 'text-main' : 'text-text'
+                  )}
+                >
+                  Enable Pacemaker
+                </h5>
+                <p className="text-sub text-sm">Show ghost caret during typing test</p>
+              </div>
+            </div>
+            <Switch
+              checked={pacemaker.enabled}
+              onCheckedChange={setPacemakerEnabled}
+            />
+          </div>
+
+          {/* WPM Slider */}
+          {pacemaker.enabled && (
+            <div className="p-4 rounded-lg bg-sub-alt/30">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-text">
+                  Target WPM
+                </label>
+                <span className="text-main font-mono font-bold text-lg">
+                  {pacemaker.wpm}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="20"
+                max="300"
+                step="5"
+                value={pacemaker.wpm}
+                onChange={(e) => setPacemakerWpm(parseInt(e.target.value, 10))}
+                className={cn(
+                  'w-full h-2 rounded-lg appearance-none cursor-pointer',
+                  'bg-sub-alt',
+                  '[&::-webkit-slider-thumb]:appearance-none',
+                  '[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4',
+                  '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-main',
+                  '[&::-webkit-slider-thumb]:cursor-pointer',
+                  '[&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4',
+                  '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-main',
+                  '[&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer'
+                )}
+              />
+              <div className="flex justify-between text-xs text-sub mt-1">
+                <span>20 WPM</span>
+                <span>300 WPM</span>
+              </div>
+              <p className="text-xs text-sub mt-2">
+                The ghost caret will move at {pacemaker.wpm} words per minute.
+                Try to keep up or stay ahead!
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Toggle Settings */}
       <div className="space-y-1">
         <h4 className="text-sm font-medium text-text mb-3">
@@ -266,12 +356,18 @@ export const BehaviorSettings = memo(function BehaviorSettings({
               Strict Space
             </span>
           )}
+          {pacemaker.enabled && (
+            <span className="px-2 py-1 rounded text-xs bg-main/20 text-main">
+              Pacemaker: {pacemaker.wpm} WPM
+            </span>
+          )}
           {behavior.stopOnError === 'off' &&
             behavior.confidenceMode === 'off' &&
             !behavior.blindMode &&
             !behavior.lazyMode &&
             !behavior.freedomMode &&
-            !behavior.strictSpace && (
+            !behavior.strictSpace &&
+            !pacemaker.enabled && (
               <span className="text-xs text-sub">
                 All default settings active
               </span>

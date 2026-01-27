@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { WpmChart } from './wpm-chart';
+import { ErrorsChart } from './errors-chart';
 import { StatsGrid } from './stats-grid';
 import { TestBreakdown } from './test-breakdown';
 import type { TestResult, PersonalBest } from '@/store/results-store';
@@ -170,8 +171,14 @@ export function ResultsScreen({
         />
       </div>
 
-      {/* WPM Chart */}
-      <WpmChart wpmHistory={result.wpmHistory} />
+      {/* Charts Section */}
+      <div className="space-y-4">
+        {/* WPM Chart */}
+        <WpmChart wpmHistory={result.wpmHistory} />
+
+        {/* Errors Over Time Chart */}
+        <ErrorsChart wpmHistory={result.wpmHistory} />
+      </div>
 
       {/* Character Breakdown */}
       <TestBreakdown

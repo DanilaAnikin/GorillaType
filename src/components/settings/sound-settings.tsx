@@ -88,11 +88,26 @@ export const SoundSettings = memo(function SoundSettings({
     const soundId = type === 'click' ? sound.clickSound : sound.errorSound;
     if (soundId === 'off') return;
 
-    const audio = new Audio(`/sounds/${type}/${soundId}.mp3`);
-    audio.volume = sound.volume;
-    audio.play().catch(() => {
-      // Ignore autoplay errors - user hasn't interacted with page yet
-    });
+    try {
+      const audio = new Audio(`/sounds/${type}/${soundId}.mp3`);
+      audio.volume = sound.volume;
+
+      // Handle load errors gracefully
+      audio.onerror = () => {
+        console.warn(`[SoundSettings] Test sound not available: /sounds/${type}/${soundId}.mp3`);
+        // Silently fail - sound file doesn't exist
+      };
+
+      audio.play().catch((error) => {
+        // Ignore autoplay errors or missing file errors
+        if (error.name !== 'NotAllowedError') {
+          console.warn(`[SoundSettings] Could not play test sound: ${error.message}`);
+        }
+      });
+    } catch (error) {
+      // Silently handle any errors creating the Audio element
+      console.warn('[SoundSettings] Error creating audio element:', error);
+    }
   };
 
   const isMuted = sound.volume === 0;

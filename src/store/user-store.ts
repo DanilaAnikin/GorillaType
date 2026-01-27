@@ -82,7 +82,7 @@ export interface UserState {
 const initialState = {
   user: null,
   profile: null,
-  isLoading: false,
+  isLoading: true, // Start as true so protected routes wait for auth check
   isAuthenticated: false,
   error: null,
   accessToken: null,
@@ -118,7 +118,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   setError: (error) => set({ error }),
 
-  clearUser: () => set({ ...initialState }),
+  clearUser: () => set({ ...initialState, isLoading: false }),
 
   updateProfile: (updates) => set((state) => ({
     profile: state.profile

@@ -16,10 +16,12 @@ DROP POLICY IF EXISTS "Allow config creation" ON user_configs;
 
 -- Create policies that only allow users to insert their OWN profile
 -- The trigger bypasses RLS via SECURITY DEFINER, but we need a fallback
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 CREATE POLICY "Users can insert own profile"
     ON profiles FOR INSERT
     WITH CHECK (auth.uid() = id OR auth.uid() IS NULL);
 
+DROP POLICY IF EXISTS "Users can insert own config" ON user_configs;
 CREATE POLICY "Users can insert own config"
     ON user_configs FOR INSERT
     WITH CHECK (auth.uid() = user_id OR auth.uid() IS NULL);

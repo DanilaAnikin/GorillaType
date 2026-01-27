@@ -48,10 +48,12 @@ export const LiveStats = memo(function LiveStats({
   // Get stats from store
   const stats = useTypingStore((state) => state.stats);
   const status = useTypingStore((state) => state.status);
+  const burstWpm = useTypingStore((state) => state.burstWpm);
 
   // Get visibility settings
   const showLiveWpm = useConfigStore((state) => state.visual.showLiveWpm);
   const showLiveAccuracy = useConfigStore((state) => state.visual.showLiveAccuracy);
+  const showLiveBurst = useConfigStore((state) => state.visual.showLiveBurst);
 
   // Determine if test is running
   const isRunning = status === 'running';
@@ -59,7 +61,8 @@ export const LiveStats = memo(function LiveStats({
   // Determine visibility
   const shouldShowWpm = forceShow || showLiveWpm;
   const shouldShowAccuracy = forceShow || showLiveAccuracy;
-  const hasStatsToShow = shouldShowWpm || shouldShowAccuracy;
+  const shouldShowBurst = forceShow || showLiveBurst;
+  const hasStatsToShow = shouldShowWpm || shouldShowAccuracy || shouldShowBurst;
 
   // Always render the container to maintain layout, but control visibility with opacity
   // This prevents layout shift when stats appear/disappear
@@ -93,6 +96,14 @@ export const LiveStats = memo(function LiveStats({
           label="accuracy"
           value={Math.round(stats.accuracy)}
           unit="%"
+        />
+      )}
+
+      {shouldShowBurst && (
+        <StatItem
+          label="burst"
+          value={Math.round(burstWpm)}
+          unit="burst"
         />
       )}
     </div>

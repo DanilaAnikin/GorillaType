@@ -1,10 +1,11 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { useConfigStore } from '@/store/config-store';
+import { useConfigStore, type CustomThemeColors } from '@/store/config-store';
 import { useUIStore } from '@/store/ui-store';
 import { useUserStore } from '@/store/user-store';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ChatPanel, ChatToggle } from '@/components/chat';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -29,9 +30,38 @@ function mapSupabaseUser(supabaseUser: SupabaseUser) {
  * Providers component wraps the application with necessary context providers.
  * Handles theme synchronization and Supabase auth state management.
  */
+/**
+ * Applies custom theme CSS variables to the document root
+ */
+function applyCustomThemeColors(customTheme: CustomThemeColors | null) {
+  const root = document.documentElement;
+
+  if (customTheme) {
+    root.style.setProperty('--custom-bg', customTheme.bg);
+    root.style.setProperty('--custom-main', customTheme.main);
+    root.style.setProperty('--custom-caret', customTheme.caret);
+    root.style.setProperty('--custom-sub', customTheme.sub);
+    root.style.setProperty('--custom-sub-alt', customTheme.subAlt);
+    root.style.setProperty('--custom-text', customTheme.text);
+    root.style.setProperty('--custom-error', customTheme.error);
+    root.style.setProperty('--custom-error-extra', customTheme.errorExtra);
+  } else {
+    // Remove custom properties when not using custom theme
+    root.style.removeProperty('--custom-bg');
+    root.style.removeProperty('--custom-main');
+    root.style.removeProperty('--custom-caret');
+    root.style.removeProperty('--custom-sub');
+    root.style.removeProperty('--custom-sub-alt');
+    root.style.removeProperty('--custom-text');
+    root.style.removeProperty('--custom-error');
+    root.style.removeProperty('--custom-error-extra');
+  }
+}
+
 export function Providers({ children }: ProvidersProps) {
   const [mounted, setMounted] = useState(false);
   const theme = useConfigStore((state) => state.visual.theme);
+  const customTheme = useConfigStore((state) => state.customTheme);
   const isFocusMode = useUIStore((state) => state.isFocusMode);
 
   // User store actions
@@ -49,9 +79,19 @@ export function Providers({ children }: ProvidersProps) {
   // Supabase auth state listener
   useEffect(() => {
     const supabase = createClient();
+    let authCheckCompleted = false;
 
     // Set loading while we check initial session
     setLoading(true);
+
+    // Set a timeout to ensure we don't hang forever (like signOut was hanging)
+    const timeout = setTimeout(() => {
+      if (!authCheckCompleted) {
+        console.log('[Providers] Auth check timeout after 3s - setting isLoading to false');
+        authCheckCompleted = true;
+        setLoading(false);
+      }
+    }, 3000);
 
     // Helper function to fetch and set user profile
     const fetchProfile = async (userId: string) => {
@@ -111,22 +151,41 @@ export function Providers({ children }: ProvidersProps) {
       }
     };
 
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        setUser(mapSupabaseUser(session.user));
-        setTokens(
-          session.access_token,
-          session.refresh_token,
-          session.expires_in ?? 3600
-        );
-        // Fetch user profile
-        await fetchProfile(session.user.id);
-      } else {
-        clearUser();
+    // Check auth with timeout protection
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        // If timeout already fired, don't update state
+        if (authCheckCompleted) return;
+
+        if (session?.user) {
+          setUser(mapSupabaseUser(session.user));
+          setTokens(
+            session.access_token,
+            session.refresh_token,
+            session.expires_in ?? 3600
+          );
+          // Fetch user profile
+          await fetchProfile(session.user.id);
+        } else {
+          clearUser();
+        }
+      } catch (err) {
+        console.error('[Providers] Error getting session:', err);
+        if (!authCheckCompleted) {
+          clearUser();
+        }
+      } finally {
+        if (!authCheckCompleted) {
+          authCheckCompleted = true;
+          clearTimeout(timeout);
+          setLoading(false);
+        }
       }
-      setLoading(false);
-    });
+    };
+
+    checkAuth();
 
     // Subscribe to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -156,8 +215,9 @@ export function Providers({ children }: ProvidersProps) {
       }
     );
 
-    // Cleanup subscription on unmount
+    // Cleanup subscription and timeout on unmount
     return () => {
+      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, [setUser, setProfile, setTokens, clearUser, setLoading]);
@@ -166,8 +226,16 @@ export function Providers({ children }: ProvidersProps) {
   useEffect(() => {
     if (mounted) {
       document.documentElement.setAttribute('data-theme', theme);
+
+      // Apply custom theme colors when custom theme is active
+      if (theme === 'custom') {
+        applyCustomThemeColors(customTheme);
+      } else {
+        // Clear custom properties when switching away from custom theme
+        applyCustomThemeColors(null);
+      }
     }
-  }, [theme, mounted]);
+  }, [theme, customTheme, mounted]);
 
   // Sync focus mode class to body for header/footer fade effect
   useEffect(() => {
@@ -189,7 +257,11 @@ export function Providers({ children }: ProvidersProps) {
           {children}
         </div>
       ) : (
-        children
+        <>
+          {children}
+          <ChatToggle />
+          <ChatPanel />
+        </>
       )}
     </TooltipProvider>
   );

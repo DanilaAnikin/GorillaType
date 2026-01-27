@@ -436,6 +436,302 @@
 }
 
 /* ============================================
+   THEME: 8008
+   ============================================ */
+[data-theme="8008"] {
+  --bg-color: #333a45;
+  --main-color: #f44c7f;
+  --caret-color: #f44c7f;
+  --sub-color: #939eae;
+  --sub-alt-color: #2d343f;
+  --text-color: #e9ecf0;
+  --error-color: #da3333;
+  --error-extra-color: #791717;
+}
+
+/* ============================================
+   THEME: botanical
+   ============================================ */
+[data-theme="botanical"] {
+  --bg-color: #7b9c98;
+  --main-color: #eaf1f3;
+  --caret-color: #eaf1f3;
+  --sub-color: #495755;
+  --sub-alt-color: #6f8e8a;
+  --text-color: #eaf1f3;
+  --error-color: #f6c9b4;
+  --error-extra-color: #e8a087;
+}
+
+/* ============================================
+   THEME: vaporwave
+   ============================================ */
+[data-theme="vaporwave"] {
+  --bg-color: #3b3561;
+  --main-color: #f7f1e3;
+  --caret-color: #6cf7d9;
+  --sub-color: #7c71ad;
+  --sub-alt-color: #322d52;
+  --text-color: #f7f1e3;
+  --error-color: #e4467a;
+  --error-extra-color: #c73a66;
+}
+
+/* ============================================
+   THEME: laser
+   ============================================ */
+[data-theme="laser"] {
+  --bg-color: #221b44;
+  --main-color: #0beeb5;
+  --caret-color: #0beeb5;
+  --sub-color: #4b3a86;
+  --sub-alt-color: #1a1436;
+  --text-color: #dbe7e8;
+  --error-color: #f67599;
+  --error-extra-color: #e7375a;
+}
+
+/* ============================================
+   THEME: olive
+   ============================================ */
+[data-theme="olive"] {
+  --bg-color: #4a4a40;
+  --main-color: #cccc99;
+  --caret-color: #cccc99;
+  --sub-color: #7a7a66;
+  --sub-alt-color: #3f3f37;
+  --text-color: #cccc99;
+  --error-color: #cc6666;
+  --error-extra-color: #994d4d;
+}
+
+/* ============================================
+   THEME: superuser
+   ============================================ */
+[data-theme="superuser"] {
+  --bg-color: #262a33;
+  --main-color: #43ffaf;
+  --caret-color: #43ffaf;
+  --sub-color: #626e87;
+  --sub-alt-color: #1f232b;
+  --text-color: #e5f7ef;
+  --error-color: #ff5f5f;
+  --error-extra-color: #d63434;
+}
+
+/* ============================================
+   THEME: terminal
+   ============================================ */
+[data-theme="terminal"] {
+  --bg-color: #1e1e1e;
+  --main-color: #4af626;
+  --caret-color: #4af626;
+  --sub-color: #3a5134;
+  --sub-alt-color: #171717;
+  --text-color: #0ccc68;
+  --error-color: #ff3a3a;
+  --error-extra-color: #c62222;
+}
+
+/* ============================================
+   THEME: nautilus
+   ============================================ */
+[data-theme="nautilus"] {
+  --bg-color: #132237;
+  --main-color: #ebc06c;
+  --caret-color: #ebc06c;
+  --sub-color: #3f5a7d;
+  --sub-alt-color: #0d1926;
+  --text-color: #87b7c7;
+  --error-color: #e34040;
+  --error-extra-color: #b83030;
+}
+
+/* ============================================
+   THEME: pulse
+   ============================================ */
+[data-theme="pulse"] {
+  --bg-color: #181818;
+  --main-color: #17b8bd;
+  --caret-color: #17b8bd;
+  --sub-color: #53565a;
+  --sub-alt-color: #101010;
+  --text-color: #e5e5e5;
+  --error-color: #e06c75;
+  --error-extra-color: #c24e58;
+}
+
+/* ============================================
+   THEME: camping
+   ============================================ */
+[data-theme="camping"] {
+  --bg-color: #faf4e5;
+  --main-color: #618c6d;
+  --caret-color: #618c6d;
+  --sub-color: #bc9f79;
+  --sub-alt-color: #ede6d5;
+  --text-color: #312e25;
+  --error-color: #c85a4e;
+  --error-extra-color: #a14438;
+}
+
+/* ============================================
+   THEME: hammerhead
+   ============================================ */
+[data-theme="hammerhead"] {
+  --bg-color: #030613;
+  --main-color: #4fcdb9;
+  --caret-color: #4fcdb9;
+  --sub-color: #1a3c47;
+  --sub-alt-color: #020510;
+  --text-color: #e2f1f5;
+  --error-color: #f05454;
+  --error-extra-color: #c93c3c;
+}
+
+/* ============================================
+   THEME: blueberry
+   ============================================ */
+[data-theme="blueberry"] {
+  --bg-color: #1b2738;
+  --main-color: #7eb8da;
+  --caret-color: #7eb8da;
+  --sub-color: #4a6382;
+  --sub-alt-color: #141d2b;
+  --text-color: #abc7db;
+  --error-color: #d9586e;
+  --error-extra-color: #b3475a;
+}
+
+/* ============================================
+   THEME: strawberry
+   ============================================ */
+[data-theme="strawberry"] {
+  --bg-color: #f6e4e3;
+  --main-color: #c2474e;
+  --caret-color: #c2474e;
+  --sub-color: #c98e8b;
+  --sub-alt-color: #ecd4d3;
+  --text-color: #4a1f22;
+  --error-color: #9b1f26;
+  --error-extra-color: #701519;
+}
+
+/* ============================================
+   THEME: mint
+   ============================================ */
+[data-theme="mint"] {
+  --bg-color: #e5f2e4;
+  --main-color: #3e7d59;
+  --caret-color: #3e7d59;
+  --sub-color: #8ab096;
+  --sub-alt-color: #d4e8d3;
+  --text-color: #1a3d2a;
+  --error-color: #c5494e;
+  --error-extra-color: #9a3a3e;
+}
+
+/* ============================================
+   THEME: moonlight
+   ============================================ */
+[data-theme="moonlight"] {
+  --bg-color: #222436;
+  --main-color: #82aaff;
+  --caret-color: #c8d3f5;
+  --sub-color: #636da6;
+  --sub-alt-color: #1e2030;
+  --text-color: #c8d3f5;
+  --error-color: #ff757f;
+  --error-extra-color: #ff5370;
+}
+
+/* ============================================
+   THEME: papercolor
+   ============================================ */
+[data-theme="papercolor"] {
+  --bg-color: #eeeeee;
+  --main-color: #005f87;
+  --caret-color: #005f87;
+  --sub-color: #878787;
+  --sub-alt-color: #dedede;
+  --text-color: #444444;
+  --error-color: #af0000;
+  --error-extra-color: #870000;
+}
+
+/* ============================================
+   THEME: sonokai
+   ============================================ */
+[data-theme="sonokai"] {
+  --bg-color: #2c2e34;
+  --main-color: #9ed072;
+  --caret-color: #e2e2e3;
+  --sub-color: #595f6f;
+  --sub-alt-color: #232428;
+  --text-color: #e2e2e3;
+  --error-color: #fc5d7c;
+  --error-extra-color: #f39660;
+}
+
+/* ============================================
+   THEME: material
+   ============================================ */
+[data-theme="material"] {
+  --bg-color: #263238;
+  --main-color: #80cbc4;
+  --caret-color: #ffcc00;
+  --sub-color: #546e7a;
+  --sub-alt-color: #1e272c;
+  --text-color: #eceff1;
+  --error-color: #f07178;
+  --error-extra-color: #ff5370;
+}
+
+/* ============================================
+   THEME: oblivion
+   ============================================ */
+[data-theme="oblivion"] {
+  --bg-color: #313131;
+  --main-color: #93c763;
+  --caret-color: #93c763;
+  --sub-color: #5c5c5c;
+  --sub-alt-color: #282828;
+  --text-color: #ebebeb;
+  --error-color: #ec7600;
+  --error-extra-color: #c46200;
+}
+
+/* ============================================
+   THEME: joker
+   ============================================ */
+[data-theme="joker"] {
+  --bg-color: #1a0e26;
+  --main-color: #00ff84;
+  --caret-color: #00ff84;
+  --sub-color: #5c2b80;
+  --sub-alt-color: #14081d;
+  --text-color: #d4beff;
+  --error-color: #ff1744;
+  --error-extra-color: #d10036;
+}
+
+/* ============================================
+   THEME: custom
+   Custom theme uses CSS variables that are
+   dynamically set via JavaScript
+   ============================================ */
+[data-theme="custom"] {
+  --bg-color: var(--custom-bg, #323437);
+  --main-color: var(--custom-main, #e2b714);
+  --caret-color: var(--custom-caret, #e2b714);
+  --sub-color: var(--custom-sub, #646669);
+  --sub-alt-color: var(--custom-sub-alt, #2c2e31);
+  --text-color: var(--custom-text, #d1d0c5);
+  --error-color: var(--custom-error, #ca4754);
+  --error-extra-color: var(--custom-error-extra, #7e2a33);
+}
+
+/* ============================================
    BASE STYLES
    ============================================ */
 @layer base {
@@ -724,6 +1020,18 @@
   50% { box-shadow: 0 0 20px 5px var(--main-color); }
 }
 
+/* Phase animation - smooth fade in/out for caret */
+@keyframes caret-phase {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Expand animation - width expands/contracts for caret */
+@keyframes caret-expand {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.5); }
+}
+
 /* ============================================
    ANIMATION UTILITY CLASSES
    ============================================ */
@@ -758,6 +1066,16 @@
 
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Caret animation utilities */
+  .animate-phase {
+    animation: caret-phase 1s ease-in-out infinite;
+  }
+
+  .animate-expand {
+    animation: caret-expand 1s ease-in-out infinite;
+    transform-origin: left center;
   }
 }
 

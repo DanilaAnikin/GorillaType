@@ -61,6 +61,12 @@ export interface UIState {
   isFocusMode: boolean;
   isFullscreen: boolean;
 
+  // Chat
+  isChatOpen: boolean;
+  chatRoomId: string | null;
+  chatRoomType: 'global' | 'direct' | 'group' | null;
+  chatRoomName: string | null;
+
   // Keyboard
   capsLockWarning: boolean;
 
@@ -104,6 +110,11 @@ export interface UIState {
 
   // Actions - Command palette
   setCommandPaletteQuery: (query: string) => void;
+
+  // Actions - Chat
+  toggleChat: () => void;
+  setChatRoom: (roomId: string | null, roomType?: 'global' | 'direct' | 'group' | null, roomName?: string | null) => void;
+  openDirectMessage: (roomId: string, friendName: string) => void;
 }
 
 const createInitialModals = (): Record<ModalType, ModalState> => ({
@@ -141,6 +152,10 @@ export const useUIStore = create<UIState>((set, get) => ({
   isMenuOpen: false,
   isFocusMode: false,
   isFullscreen: false,
+  isChatOpen: false,
+  chatRoomId: null,
+  chatRoomType: null,
+  chatRoomName: null,
   capsLockWarning: false,
   globalLoading: false,
   loadingMessage: null,
@@ -246,6 +261,20 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   // Command palette actions
   setCommandPaletteQuery: (commandPaletteQuery) => set({ commandPaletteQuery }),
+
+  // Chat actions
+  toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
+  setChatRoom: (chatRoomId, chatRoomType = null, chatRoomName = null) => set({
+    chatRoomId,
+    chatRoomType,
+    chatRoomName
+  }),
+  openDirectMessage: (roomId, friendName) => set({
+    chatRoomId: roomId,
+    chatRoomType: 'direct',
+    chatRoomName: friendName,
+    isChatOpen: true,
+  }),
 }));
 
 // Convenience functions for common notification types

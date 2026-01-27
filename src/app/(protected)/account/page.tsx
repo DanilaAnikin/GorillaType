@@ -342,10 +342,17 @@ export default function AccountPage() {
 
       if (deleteDataError) throw deleteDataError;
 
-      // Sign out user (actual account deletion requires server-side admin action)
-      await supabase.auth.signOut();
+      // Sign out user via server-side API to properly clear session cookies
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      // Redirect will happen via auth state change listener
+      // Clear local state and redirect
+      useUserStore.getState().clearUser();
+      window.location.href = '/';
     } catch (err) {
       setError("Failed to delete account");
       console.error("Account deletion error:", err);

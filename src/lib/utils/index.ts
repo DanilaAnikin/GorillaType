@@ -54,3 +54,19 @@ export {
   formatOrdinal,
   truncateText
 } from "./formatting";
+
+// Keyboard layout utilities
+export {
+  QWERTY_LAYOUT,
+  DVORAK_LAYOUT,
+  COLEMAK_LAYOUT,
+  WORKMAN_LAYOUT,
+  getKeyboardLayout,
+  getKeyForChar,
+  keyExistsInLayout,
+  SHIFT_MAP,
+  type KeymapLayoutType,
+  type KeyDefinition,
+  type KeyboardRow,
+  type KeyboardLayout
+} from "./keyboard-layouts";

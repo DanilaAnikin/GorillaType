@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Slider, SliderWithLabel } from "@/components/ui/slider";
 import { ThemeSelector } from "@/components/settings/theme-selector";
+import { TypographySettings } from "@/components/settings/typography-settings";
 import {
   Palette,
   Settings2,
@@ -67,6 +68,7 @@ export default function SettingsPage() {
     toggleShowAllLines,
     toggleShowLiveWpm,
     toggleShowLiveAccuracy,
+    toggleShowLiveBurst,
     toggleShowTimer,
     toggleShowKeyTips,
     togglePunctuation,
@@ -213,6 +215,22 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
+            {/* Typography Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Type className="h-5 w-5" />
+                  Typography
+                </CardTitle>
+                <CardDescription>
+                  Adjust line height and letter spacing for better readability
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TypographySettings />
+              </CardContent>
+            </Card>
+
             {/* Caret Settings */}
             <Card>
               <CardHeader>
@@ -294,6 +312,12 @@ export default function SettingsPage() {
                   description="Display accuracy percentage while typing"
                   checked={visual.showLiveAccuracy}
                   onCheckedChange={toggleShowLiveAccuracy}
+                />
+                <SwitchWithLabel
+                  label="Show Live Burst"
+                  description="Display burst WPM (speed of last word typed)"
+                  checked={visual.showLiveBurst}
+                  onCheckedChange={toggleShowLiveBurst}
                 />
                 <SwitchWithLabel
                   label="Show Timer"

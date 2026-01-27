@@ -14,11 +14,11 @@ import {
   ChevronDown,
   Keyboard,
   Users,
+  Shield,
 } from "lucide-react";
 import { useUserStore, selectIsLoggedIn, selectDisplayName, selectAvatarUrl } from "@/store/user-store";
 import { Avatar } from "@/components/ui/avatar";
 import { useConfigStore } from "@/store/config-store";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils/cn";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -59,6 +59,11 @@ const navItems: NavItem[] = [
     icon: <Trophy className="h-4 w-4" />,
   },
   {
+    href: "/clans",
+    label: "Clans",
+    icon: <Shield className="h-4 w-4" />,
+  },
+  {
     href: "/friends",
     label: "Friends",
     icon: <Users className="h-4 w-4" />,
@@ -90,25 +95,32 @@ export function Header() {
   };
 
   const handleLogout = async () => {
+    console.log("Logout clicked - handleLogout called");
+
+    // Clear local state first - this ensures UI updates immediately
+    useUserStore.getState().clearUser();
+    console.log("User store cleared");
+
+    // Call server-side logout API to properly clear session cookies
     try {
-      const supabase = createClient();
-      // Use global scope to invalidate server-side session as well
-      const { error } = await supabase.auth.signOut({ scope: 'global' });
-      if (error) {
-        console.error("Logout error:", error);
-      }
-      // Clear the user store immediately for faster UI update
-      useUserStore.getState().clearUser();
-      // Redirect to home page
-      router.push("/");
-      // Force a refresh to clear any cached state
-      router.refresh();
-    } catch (error) {
-      console.error("Logout error:", error);
-      // Even if logout fails, clear local state and redirect
-      useUserStore.getState().clearUser();
-      router.push("/");
+      console.log("Calling server-side logout API...");
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      console.log("Server logout response:", data);
+    } catch (e) {
+      console.log("Server logout error:", e);
+      // Continue with redirect even if server logout fails
     }
+
+    // Always redirect regardless of logout result
+    router.push("/");
+    router.refresh();
+    console.log("Router push and refresh called");
   };
 
   return (
@@ -222,8 +234,11 @@ export function Header() {
                 </DropdownItem>
                 <DropdownSeparator className="bg-sub/20" />
                 <DropdownItem
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 text-error hover:bg-bg hover:text-error focus:bg-bg focus:text-error transition-all duration-[125ms]"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    handleLogout();
+                  }}
+                  className="flex items-center gap-2 text-error hover:bg-bg hover:text-error focus:bg-bg focus:text-error transition-all duration-[125ms] cursor-pointer"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Log out</span>

@@ -1,9 +1,10 @@
 'use client';
 
-import { memo } from 'react';
-import { useConfigStore, type Theme } from '@/store/config-store';
+import { memo, useState } from 'react';
+import { useConfigStore, type Theme, type CustomThemeColors } from '@/store/config-store';
 import { cn } from '@/lib/utils/cn';
-import { Check } from 'lucide-react';
+import { Check, Palette, ChevronDown, ChevronUp } from 'lucide-react';
+import { CustomThemeBuilder } from './custom-theme-builder';
 
 interface ThemePreview {
   id: Theme;
@@ -227,16 +228,54 @@ interface ThemeSelectorProps {
 export const ThemeSelector = memo(function ThemeSelector({
   className = '',
 }: ThemeSelectorProps) {
-  const { visual, setTheme } = useConfigStore();
+  const { visual, setTheme, customTheme } = useConfigStore();
   const currentTheme = visual.theme;
+  const [showCustomBuilder, setShowCustomBuilder] = useState(currentTheme === 'custom');
 
   const handleThemeSelect = (themeId: Theme) => {
     setTheme(themeId);
+    if (themeId === 'custom') {
+      setShowCustomBuilder(true);
+    }
   };
+
+  // Get custom theme colors for preview
+  const customThemePreview: ThemePreview | null = customTheme ? {
+    id: 'custom',
+    name: 'Custom',
+    colors: {
+      bg: customTheme.bg,
+      text: customTheme.text,
+      sub: customTheme.sub,
+      main: customTheme.main,
+      error: customTheme.error,
+    },
+  } : {
+    id: 'custom',
+    name: 'Custom',
+    colors: {
+      bg: '#323437',
+      text: '#d1d0c5',
+      sub: '#646669',
+      main: '#e2b714',
+      error: '#ca4754',
+    },
+  };
+
+  // Get current theme info
+  const getCurrentThemeInfo = () => {
+    if (currentTheme === 'custom') {
+      return customThemePreview;
+    }
+    return themes.find((t) => t.id === currentTheme);
+  };
+
+  const currentThemeInfo = getCurrentThemeInfo();
 
   return (
     <div className={`${className}`.trim()}>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+        {/* Preset themes */}
         {themes.map((theme) => {
           const isActive = currentTheme === theme.id;
 
@@ -311,6 +350,53 @@ export const ThemeSelector = memo(function ThemeSelector({
             </button>
           );
         })}
+
+        {/* Custom Theme Button */}
+        <button
+          onClick={() => {
+            handleThemeSelect('custom');
+            setShowCustomBuilder(true);
+          }}
+          className={cn(
+            'group relative flex flex-col rounded-lg overflow-hidden',
+            'border-2 transition-all duration-200',
+            'focus:outline-none focus:ring-2 focus:ring-main focus:ring-offset-2 focus:ring-offset-bg',
+            currentTheme === 'custom'
+              ? 'border-main ring-2 ring-main/30'
+              : 'border-sub/30 hover:border-sub border-dashed'
+          )}
+          title="Custom Theme"
+        >
+          {/* Custom Theme Preview */}
+          <div
+            className="relative w-full aspect-[4/3] p-2 flex items-center justify-center"
+            style={{ backgroundColor: customThemePreview.colors.bg }}
+          >
+            <Palette
+              className="w-6 h-6"
+              style={{ color: customThemePreview.colors.main }}
+            />
+            {/* Active Indicator */}
+            {currentTheme === 'custom' && (
+              <div className="absolute top-1 right-1 bg-main rounded-full p-0.5">
+                <Check className="h-3 w-3 text-bg" />
+              </div>
+            )}
+          </div>
+
+          {/* Theme Name */}
+          <div
+            className="px-2 py-1.5 text-center"
+            style={{ backgroundColor: customThemePreview.colors.bg }}
+          >
+            <span
+              className="text-xs font-medium truncate block"
+              style={{ color: customThemePreview.colors.text }}
+            >
+              Custom
+            </span>
+          </div>
+        </button>
       </div>
 
       {/* Current Theme Info */}
@@ -319,16 +405,12 @@ export const ThemeSelector = memo(function ThemeSelector({
           <div>
             <span className="text-sub text-sm">Current theme:</span>
             <span className="ml-2 text-text font-medium">
-              {themes.find((t) => t.id === currentTheme)?.name || currentTheme}
+              {currentThemeInfo?.name || currentTheme}
             </span>
           </div>
           <div className="flex gap-2">
-            {themes
-              .find((t) => t.id === currentTheme)
-              ?.colors &&
-              Object.entries(
-                themes.find((t) => t.id === currentTheme)!.colors
-              ).map(([key, color]) => (
+            {currentThemeInfo?.colors &&
+              Object.entries(currentThemeInfo.colors).map(([key, color]) => (
                 <div
                   key={key}
                   className="w-4 h-4 rounded-full border border-sub/30"
@@ -338,6 +420,40 @@ export const ThemeSelector = memo(function ThemeSelector({
               ))}
           </div>
         </div>
+      </div>
+
+      {/* Custom Theme Builder Toggle */}
+      <div className="mt-4">
+        <button
+          onClick={() => setShowCustomBuilder(!showCustomBuilder)}
+          className={cn(
+            'w-full flex items-center justify-between',
+            'px-4 py-3 rounded-lg',
+            'bg-sub-alt/30 border border-sub/20',
+            'hover:border-sub transition-colors',
+            'text-left'
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <Palette className="w-5 h-5 text-main" />
+            <div>
+              <div className="text-text font-medium">Custom Theme Builder</div>
+              <div className="text-sub text-sm">Create your own personalized theme</div>
+            </div>
+          </div>
+          {showCustomBuilder ? (
+            <ChevronUp className="w-5 h-5 text-sub" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-sub" />
+          )}
+        </button>
+
+        {/* Custom Theme Builder Panel */}
+        {showCustomBuilder && (
+          <div className="mt-4 p-4 rounded-lg bg-sub-alt/20 border border-sub/20 animate-fade-in">
+            <CustomThemeBuilder />
+          </div>
+        )}
       </div>
     </div>
   );

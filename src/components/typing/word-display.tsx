@@ -1,9 +1,10 @@
 'use client';
 
-import { memo, useRef, useEffect, useMemo, useCallback } from 'react';
+import { memo, useRef, useEffect, useMemo, useCallback, useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { useTypingStore, type Word } from '@/store/typing-store';
-import { useConfigStore } from '@/store/config-store';
+import { useConfigStore, type CaretStyle, type SmoothCaret } from '@/store/config-store';
+import { PacemakerCaret } from './pacemaker-caret';
 // Caret import removed - caret is hidden per user preference
 
 export interface WordDisplayProps {
@@ -20,13 +21,13 @@ interface CharacterProps {
   status: 'correct' | 'incorrect' | 'extra' | 'missed' | 'pending';
   isCurrent?: boolean;
   showCaret?: boolean;
-  caretStyle?: 'line' | 'block' | 'underline' | 'outline';
-  smoothCaret?: 'off' | 'slow' | 'medium' | 'fast';
+  caretStyle?: CaretStyle;
+  smoothCaret?: SmoothCaret;
 }
 
 interface CaretPlaceholderProps {
-  caretStyle: 'line' | 'block' | 'underline' | 'outline';
-  smoothCaret: 'off' | 'slow' | 'medium' | 'fast';
+  caretStyle: CaretStyle;
+  smoothCaret: SmoothCaret;
 }
 
 // Separate component for caret placeholder at end of word/extra characters
@@ -79,9 +80,10 @@ interface WordProps {
   word: Word;
   isCurrentWord: boolean;
   currentCharIndex: number;
-  caretStyle: 'line' | 'block' | 'underline' | 'outline';
-  smoothCaret: 'off' | 'slow' | 'medium' | 'fast';
+  caretStyle: CaretStyle;
+  smoothCaret: SmoothCaret;
   hideExtraLetters?: boolean;
+  isHidden?: boolean; // For memory mode - word is hidden
 }
 
 const WordComponent = memo(function WordComponent({
@@ -91,6 +93,7 @@ const WordComponent = memo(function WordComponent({
   caretStyle,
   smoothCaret,
   hideExtraLetters = false,
+  isHidden = false,
 }: WordProps) {
   const { characters, showEndCaret } = useMemo(() => {
     const result: Array<{
@@ -155,6 +158,40 @@ const WordComponent = memo(function WordComponent({
     }
   );
 
+  // If word is hidden in memory mode, show underscores instead of the actual characters
+  // But still show typed characters for feedback
+  if (isHidden) {
+    return (
+      <span className={wordClass}>
+        {characters.map((charData, index) => {
+          // For hidden words, show underscore for pending characters
+          // but show the typed character (with correct/incorrect status) for already typed
+          const displayChar = charData.status === 'pending' || charData.status === 'missed'
+            ? '_'
+            : charData.char;
+
+          return (
+            <Character
+              key={index}
+              char={displayChar}
+              status={charData.status}
+              isCurrent={charData.isCurrent}
+              showCaret={charData.showCaret}
+              caretStyle={caretStyle}
+              smoothCaret={smoothCaret}
+            />
+          );
+        })}
+        {showEndCaret && (
+          <CaretPlaceholder
+            caretStyle={caretStyle}
+            smoothCaret={smoothCaret}
+          />
+        )}
+      </span>
+    );
+  }
+
   return (
     <span className={wordClass}>
       {characters.map((charData, index) => (
@@ -192,6 +229,8 @@ export const WordDisplay = memo(function WordDisplay({
   const currentWordIndex = useTypingStore((state) => state.currentWordIndex);
   const currentCharIndex = useTypingStore((state) => state.currentCharIndex);
   const status = useTypingStore((state) => state.status);
+  const wordVisibility = useTypingStore((state) => state.wordVisibility);
+  const hideWord = useTypingStore((state) => state.hideWord);
 
   const caretStyle = useConfigStore((state) => state.caret.style);
   const smoothCaret = useConfigStore((state) => state.caret.smoothCaret);
@@ -199,6 +238,58 @@ export const WordDisplay = memo(function WordDisplay({
   const smoothLineScroll = useConfigStore((state) => state.visual.smoothLineScroll);
   const fontSize = useConfigStore((state) => state.visual.fontSize);
   const fontFamily = useConfigStore((state) => state.visual.fontFamily);
+  const lineHeight = useConfigStore((state) => state.visual.lineHeight);
+  const letterSpacing = useConfigStore((state) => state.visual.letterSpacing);
+
+  // Funbox settings
+  const funboxMode = useConfigStore((state) => state.funbox.mode);
+  const memoryDuration = useConfigStore((state) => state.funbox.memoryDuration);
+  const readAheadCount = useConfigStore((state) => state.funbox.readAheadCount);
+
+  // Track active timers for memory mode
+  const memoryTimersRef = useRef<Map<number, NodeJS.Timeout>>(new Map());
+  const lastCurrentWordRef = useRef<number>(-1);
+
+  // Memory mode: start timer when word becomes active
+  useEffect(() => {
+    if (funboxMode !== 'memory' || status !== 'running') return;
+
+    // Only start timer when we move to a new word
+    if (currentWordIndex !== lastCurrentWordRef.current) {
+      lastCurrentWordRef.current = currentWordIndex;
+
+      // Don't start timer if word is already hidden
+      if (wordVisibility[currentWordIndex] === false) return;
+
+      // Clear any existing timer for this word
+      const existingTimer = memoryTimersRef.current.get(currentWordIndex);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+      }
+
+      // Start new timer to hide the word after memoryDuration seconds
+      const timer = setTimeout(() => {
+        hideWord(currentWordIndex);
+        memoryTimersRef.current.delete(currentWordIndex);
+      }, memoryDuration * 1000);
+
+      memoryTimersRef.current.set(currentWordIndex, timer);
+    }
+
+    // Cleanup function
+    return () => {
+      // Don't clear timers on cleanup - they should persist until they fire
+    };
+  }, [funboxMode, status, currentWordIndex, memoryDuration, wordVisibility, hideWord]);
+
+  // Clean up all timers when test ends or resets
+  useEffect(() => {
+    if (status === 'idle' || status === 'finished' || status === 'waiting') {
+      memoryTimersRef.current.forEach((timer) => clearTimeout(timer));
+      memoryTimersRef.current.clear();
+      lastCurrentWordRef.current = -1;
+    }
+  }, [status]);
 
   // Map font size setting to CSS class
   const fontSizeClasses: Record<string, string> = {
@@ -291,12 +382,36 @@ export const WordDisplay = memo(function WordDisplay({
       className={containerClasses}
       style={{
         maxHeight: showAllLines ? 'none' : `${visibleLines * 2.75}rem`,
-        lineHeight: 1.6,
+        lineHeight: lineHeight,
+        letterSpacing: `${letterSpacing}em`,
       }}
     >
+      {/* Pacemaker ghost caret */}
+      <PacemakerCaret
+        containerRef={containerRef as React.RefObject<HTMLDivElement>}
+        wordRefs={wordRefs as React.RefObject<Map<number, HTMLSpanElement>>}
+      />
       <div className={cn('flex flex-wrap', fontFamilyClass)}>
         {words.map((word, index) => {
           const isCurrentWord = index === currentWordIndex;
+
+          // Determine if word should be hidden based on funbox mode
+          let isHidden = false;
+
+          if (funboxMode === 'memory') {
+            // In memory mode, hide words that have had their timer expire
+            // Only apply hiding for words that have been visited (index <= currentWordIndex)
+            // and their visibility has been set to false
+            isHidden = wordVisibility[index] === false && index <= currentWordIndex;
+          } else if (funboxMode === 'readAhead') {
+            // In read-ahead mode:
+            // - Hide words behind the current word (already typed)
+            // - Show current word and readAheadCount words ahead
+            // - Hide words further ahead
+            const isBeforeCurrent = index < currentWordIndex;
+            const isTooFarAhead = index > currentWordIndex + readAheadCount;
+            isHidden = isBeforeCurrent || isTooFarAhead;
+          }
 
           return (
             <span
@@ -311,6 +426,7 @@ export const WordDisplay = memo(function WordDisplay({
                 caretStyle={caretStyle}
                 smoothCaret={smoothCaret}
                 hideExtraLetters={hideExtraLetters}
+                isHidden={isHidden}
               />
             </span>
           );

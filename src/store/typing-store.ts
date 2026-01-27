@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useConfigStore } from './config-store';
 
 // Types
 export interface Word {
@@ -40,6 +41,9 @@ export interface TestState {
   currentCharIndex: number;
   currentInput: string;
 
+  // Memory mode (funbox)
+  wordVisibility: boolean[]; // Track which words are visible (for memory mode)
+
   // Test status
   status: TestStatus;
   startTime: number | null;
@@ -59,6 +63,14 @@ export interface TestState {
   // Tracking
   keystrokes: number;
   errors: number;
+  missedKeys: Record<string, number>; // Track error frequency per expected character
+
+  // Burst tracking
+  lastWordStartTime: number | null;
+  burstWpm: number;
+
+  // Pacemaker
+  pacemakerPosition: number; // Character index for ghost caret
 
   // Actions
   initializeTest: (words: string[], duration?: number, mode?: 'time' | 'words' | 'quote' | 'zen', wordCount?: number) => void;
@@ -70,11 +82,19 @@ export interface TestState {
   // Input handling
   handleKeyPress: (char: string) => void;
   handleBackspace: () => void;
+  handleDeleteWord: () => void;
+  handleDeleteLine: () => void;
   handleSpace: () => void;
 
   // Stats
   updateStats: () => void;
   recordWpmSnapshot: () => void;
+
+  // Pacemaker
+  updatePacemakerPosition: (targetWpm: number) => void;
+
+  // Memory mode
+  hideWord: (index: number) => void;
 
   // Timer
   tick: () => void;
@@ -102,6 +122,9 @@ export const useTypingStore = create<TestState>((set, get) => ({
   currentCharIndex: 0,
   currentInput: '',
 
+  // Memory mode
+  wordVisibility: [],
+
   status: 'idle',
   startTime: null,
   endTime: null,
@@ -117,6 +140,14 @@ export const useTypingStore = create<TestState>((set, get) => ({
 
   keystrokes: 0,
   errors: 0,
+  missedKeys: {},
+
+  // Burst tracking
+  lastWordStartTime: null,
+  burstWpm: 0,
+
+  // Pacemaker
+  pacemakerPosition: 0,
 
   // Actions
   initializeTest: (wordStrings, duration = 30, mode = 'time', wordCount = 25) => {
@@ -134,6 +165,7 @@ export const useTypingStore = create<TestState>((set, get) => ({
       currentWordIndex: 0,
       currentCharIndex: 0,
       currentInput: '',
+      wordVisibility: new Array(wordStrings.length).fill(true), // All words visible initially
       status: 'waiting',
       startTime: null,
       endTime: null,
@@ -146,6 +178,10 @@ export const useTypingStore = create<TestState>((set, get) => ({
       wpmHistory: [],
       keystrokes: 0,
       errors: 0,
+      missedKeys: {},
+      lastWordStartTime: null,
+      burstWpm: 0,
+      pacemakerPosition: 0,
     });
   },
 
@@ -153,9 +189,11 @@ export const useTypingStore = create<TestState>((set, get) => ({
     const { status } = get();
     if (status !== 'waiting') return;
 
+    const now = Date.now();
     set({
       status: 'running',
-      startTime: Date.now(),
+      startTime: now,
+      lastWordStartTime: now,
     });
   },
 
@@ -181,6 +219,7 @@ export const useTypingStore = create<TestState>((set, get) => ({
       currentWordIndex: 0,
       currentCharIndex: 0,
       currentInput: '',
+      wordVisibility: [],
       status: 'idle',
       startTime: null,
       endTime: null,
@@ -190,6 +229,10 @@ export const useTypingStore = create<TestState>((set, get) => ({
       wpmHistory: [],
       keystrokes: 0,
       errors: 0,
+      missedKeys: {},
+      lastWordStartTime: null,
+      burstWpm: 0,
+      pacemakerPosition: 0,
     });
   },
 
@@ -215,6 +258,7 @@ export const useTypingStore = create<TestState>((set, get) => ({
       currentWordIndex: 0,
       currentCharIndex: 0,
       currentInput: '',
+      wordVisibility: new Array(originalWordStrings.length).fill(true), // Reset all words to visible
       status: 'waiting',
       startTime: null,
       endTime: null,
@@ -224,6 +268,10 @@ export const useTypingStore = create<TestState>((set, get) => ({
       wpmHistory: [],
       keystrokes: 0,
       errors: 0,
+      missedKeys: {},
+      lastWordStartTime: null,
+      burstWpm: 0,
+      pacemakerPosition: 0,
     });
   },
 
@@ -253,10 +301,18 @@ export const useTypingStore = create<TestState>((set, get) => ({
       newCharStatuses[charIndex] = char === expectedChar ? 'correct' : 'incorrect';
     }
 
-    // Track errors
+    // Track errors and missed keys
     let newErrors = state.errors;
+    let newMissedKeys = state.missedKeys;
     if (char !== expectedChar) {
       newErrors++;
+      // Track the expected character that was missed (if it exists)
+      if (expectedChar) {
+        newMissedKeys = {
+          ...newMissedKeys,
+          [expectedChar]: (newMissedKeys[expectedChar] || 0) + 1,
+        };
+      }
     }
 
     // Update word
@@ -273,9 +329,30 @@ export const useTypingStore = create<TestState>((set, get) => ({
       currentCharIndex: charIndex + 1,
       keystrokes: state.keystrokes + 1,
       errors: newErrors,
+      missedKeys: newMissedKeys,
     });
 
     get().updateStats();
+
+    // Quick End feature: end test immediately when last character is typed correctly
+    const quickEnd = useConfigStore.getState().behavior.quickEnd;
+    if (quickEnd) {
+      const isLastWord = currentWordIndex === words.length - 1;
+      const justTypedLastChar = newInput.length === currentWord.text.length;
+      const lastCharCorrect = char === expectedChar;
+      const wordFullyCorrect = newInput === currentWord.text;
+
+      if (isLastWord && justTypedLastChar && lastCharCorrect && wordFullyCorrect) {
+        // Mark the word as correct before ending
+        const finalWords = [...updatedWords];
+        finalWords[currentWordIndex] = {
+          ...finalWords[currentWordIndex],
+          isCorrect: true,
+        };
+        set({ words: finalWords });
+        get().endTest();
+      }
+    }
   },
 
   handleBackspace: () => {
@@ -332,6 +409,78 @@ export const useTypingStore = create<TestState>((set, get) => ({
     });
   },
 
+  handleDeleteWord: () => {
+    const state = get();
+    if (state.status !== 'running' && state.status !== 'waiting') return;
+
+    const { words, currentWordIndex, currentInput } = state;
+
+    if (currentInput.length === 0) {
+      // At start of current word, move to previous word and clear it
+      if (currentWordIndex > 0) {
+        const prevWordIndex = currentWordIndex - 1;
+        const prevWord = words[prevWordIndex];
+
+        // Reset the previous word completely
+        const updatedWords = [...words];
+        updatedWords[prevWordIndex] = {
+          ...prevWord,
+          typed: '',
+          isCorrect: null,
+          charStatuses: new Array(prevWord.text.length).fill('pending'),
+        };
+
+        set({
+          words: updatedWords,
+          currentWordIndex: prevWordIndex,
+          currentInput: '',
+          currentCharIndex: 0,
+        });
+      }
+      return;
+    }
+
+    // Clear the current word's input entirely
+    const currentWord = words[currentWordIndex];
+    const updatedWords = [...words];
+    updatedWords[currentWordIndex] = {
+      ...currentWord,
+      typed: '',
+      charStatuses: new Array(currentWord.text.length).fill('pending'),
+    };
+
+    set({
+      words: updatedWords,
+      currentInput: '',
+      currentCharIndex: 0,
+    });
+  },
+
+  handleDeleteLine: () => {
+    const state = get();
+    if (state.status !== 'running' && state.status !== 'waiting') return;
+
+    const { words, originalWordStrings } = state;
+
+    // Reset all words to their initial state
+    const resetWords = originalWordStrings.map((text, index) => ({
+      id: index,
+      text,
+      typed: '',
+      isCorrect: null,
+      charStatuses: new Array(text.length).fill('pending') as ('correct' | 'incorrect' | 'pending')[],
+    }));
+
+    // Keep the test running but reset progress
+    // Note: We don't reset startTime, keystrokes, or errors to maintain test integrity
+    set({
+      words: resetWords,
+      currentWordIndex: 0,
+      currentCharIndex: 0,
+      currentInput: '',
+    });
+  },
+
   handleSpace: () => {
     let state = get();
 
@@ -359,10 +508,23 @@ export const useTypingStore = create<TestState>((set, get) => ({
       isCorrect,
     };
 
+    // Calculate burst WPM for this word
+    const now = Date.now();
+    let newBurstWpm = state.burstWpm;
+    if (state.lastWordStartTime !== null) {
+      const wordTimeMs = now - state.lastWordStartTime;
+      if (wordTimeMs > 0) {
+        // Burst WPM = (wordLength / 5) / (timeInMinutes)
+        const wordLength = currentInput.length;
+        const timeInMinutes = wordTimeMs / 60000;
+        newBurstWpm = Math.round((wordLength / 5) / timeInMinutes);
+      }
+    }
+
     // Check if test should end (word mode)
     const nextWordIndex = currentWordIndex + 1;
     if (state.testMode === 'words' && nextWordIndex >= state.wordCount) {
-      set({ words: updatedWords });
+      set({ words: updatedWords, burstWpm: newBurstWpm });
       get().endTest();
       return;
     }
@@ -374,6 +536,8 @@ export const useTypingStore = create<TestState>((set, get) => ({
       currentInput: '',
       currentCharIndex: 0,
       keystrokes: state.keystrokes + 1, // Count space as keystroke
+      lastWordStartTime: now, // Reset for next word
+      burstWpm: newBurstWpm,
     });
 
     get().updateStats();
@@ -481,6 +645,42 @@ export const useTypingStore = create<TestState>((set, get) => ({
 
     set({
       wpmHistory: [...wpmHistory, snapshot],
+    });
+  },
+
+  updatePacemakerPosition: (targetWpm: number) => {
+    const state = get();
+    if (state.status !== 'running' || !state.startTime) return;
+
+    // Calculate elapsed time in seconds
+    const elapsedSeconds = (Date.now() - state.startTime) / 1000;
+
+    // Formula: position = (targetWpm / 60) * 5 * elapsedSeconds
+    // This gives characters per second based on WPM (where 1 word = 5 characters)
+    const charactersPerSecond = (targetWpm / 60) * 5;
+    const newPosition = charactersPerSecond * elapsedSeconds;
+
+    // Calculate total characters in all words (including spaces between words)
+    const totalChars = state.words.reduce((sum, word, index) => {
+      // Add word length + 1 for space (except for last word)
+      return sum + word.text.length + (index < state.words.length - 1 ? 1 : 0);
+    }, 0);
+
+    // Clamp position to not exceed total characters
+    set({
+      pacemakerPosition: Math.min(newPosition, totalChars),
+    });
+  },
+
+  hideWord: (index: number) => {
+    const state = get();
+    if (index < 0 || index >= state.wordVisibility.length) return;
+
+    const newVisibility = [...state.wordVisibility];
+    newVisibility[index] = false;
+
+    set({
+      wordVisibility: newVisibility,
     });
   },
 
