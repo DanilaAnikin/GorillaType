@@ -23,10 +23,20 @@ export {
   getAllQuotes,
   shuffleArray,
   createCustomWordList,
+  generateFromCustomList,
   type Language,
   type QuoteLength,
   type GenerateWordsOptions
 } from "./word-generator";
+
+// Weakness analysis utilities
+export {
+  analyzeWeaknesses,
+  getWeaknessSummary,
+  type KeyWeakness,
+  type BigramWeakness,
+  type WeaknessReport
+} from "./weakness-analyzer";
 
 // Validation utilities
 export {

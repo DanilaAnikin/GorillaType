@@ -39,11 +39,11 @@ export async function GET(request: NextRequest) {
         .from('race_rooms')
         .select(`
           id,
-          code,
+          room_code,
           status,
-          mode,
-          time_limit,
-          word_limit,
+          test_mode,
+          test_duration,
+          test_word_count,
           max_participants,
           is_private,
           created_at,
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
 
       const formattedRooms = (rooms || []).map((room) => ({
         id: room.id,
-        code: room.code,
+        code: room.room_code,
         host: {
           username: (room.host as { username?: string })?.username || 'Anonymous',
           avatarUrl: (room.host as { avatar_url?: string })?.avatar_url,
@@ -80,9 +80,9 @@ export async function GET(request: NextRequest) {
         },
         participantCount: (room.participants as { user_id: string }[])?.length || 0,
         maxParticipants: room.max_participants,
-        mode: room.mode,
-        timeLimit: room.time_limit,
-        wordLimit: room.word_limit,
+        mode: room.test_mode,
+        timeLimit: room.test_duration,
+        wordLimit: room.test_word_count,
         status: room.status,
         isPrivate: room.is_private,
         createdAt: room.created_at,
@@ -111,10 +111,10 @@ export async function GET(request: NextRequest) {
           finished_at,
           room:room_id (
             id,
-            code,
-            mode,
-            time_limit,
-            word_limit,
+            room_code,
+            test_mode,
+            test_duration,
+            test_word_count,
             status,
             race_participants (user_id)
           )
@@ -138,10 +138,10 @@ export async function GET(request: NextRequest) {
         const roomData = entry.room;
         const room = (Array.isArray(roomData) ? roomData[0] : roomData) as {
           id: string;
-          code: string;
-          mode: 'time' | 'words';
-          time_limit: number | null;
-          word_limit: number | null;
+          room_code: string;
+          test_mode: 'time' | 'words';
+          test_duration: number | null;
+          test_word_count: number | null;
           status: string;
           race_participants: { user_id: string }[];
         } | null;
@@ -154,15 +154,15 @@ export async function GET(request: NextRequest) {
 
         return {
           id: entry.id,
-          roomCode: room?.code || 'UNKNOWN',
+          roomCode: room?.room_code || 'UNKNOWN',
           finishedAt: entry.finished_at,
           position,
           totalRacers,
           wpm: entry.wpm || 0,
           accuracy: entry.accuracy || 0,
-          mode: room?.mode || 'time',
-          timeLimit: room?.time_limit,
-          wordLimit: room?.word_limit,
+          mode: room?.test_mode || 'time',
+          timeLimit: room?.test_duration,
+          wordLimit: room?.test_word_count,
         };
       });
 
@@ -190,7 +190,8 @@ export async function GET(request: NextRequest) {
         ),
         participants:race_participants (
           user_id,
-          status,
+          is_ready,
+          is_finished,
           wpm,
           accuracy,
           progress,
@@ -205,7 +206,7 @@ export async function GET(request: NextRequest) {
       `);
 
     if (code) {
-      query = query.eq('code', code.toUpperCase());
+      query = query.eq('room_code', code.toUpperCase());
     } else if (roomId) {
       query = query.eq('id', roomId);
     }
@@ -235,10 +236,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Format participants
+    // Format participants - DB uses is_ready/is_finished booleans, map to status string
     const participants = (room.participants || []).map((p: {
       user_id: string;
-      status: string;
+      is_ready: boolean;
+      is_finished: boolean;
       wpm: number | null;
       accuracy: number | null;
       progress: number;
@@ -255,7 +257,7 @@ export async function GET(request: NextRequest) {
       displayName: p.profiles?.display_name,
       avatarUrl: p.profiles?.avatar_url,
       level: p.profiles?.level || 1,
-      status: p.status,
+      status: p.is_finished ? 'finished' : p.is_ready ? 'ready' : 'racing',
       wpm: p.wpm,
       accuracy: p.accuracy,
       progress: p.progress,
@@ -265,15 +267,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       room: {
         id: room.id,
-        code: room.code,
+        code: room.room_code,
         status: room.status,
-        mode: room.mode,
-        timeLimit: room.time_limit,
-        wordLimit: room.word_limit,
-        language: room.language,
-        punctuation: room.punctuation,
-        numbers: room.numbers,
-        text: room.text,
+        mode: room.test_mode,
+        timeLimit: room.test_duration,
+        wordLimit: room.test_word_count,
+        language: room.test_language,
+        punctuation: false, // DB schema doesn't have separate punctuation column for race_rooms
+        numbers: false, // DB schema doesn't have separate numbers column for race_rooms
+        text: room.test_text,
         maxParticipants: room.max_participants,
         isPrivate: room.is_private,
         host: {
@@ -286,8 +288,8 @@ export async function GET(request: NextRequest) {
         participants,
         participantCount: participants.length,
         createdAt: room.created_at,
-        startedAt: room.started_at,
-        finishedAt: room.finished_at,
+        startedAt: room.race_started_at,
+        finishedAt: room.race_ended_at,
       },
     });
   } catch (error) {
@@ -367,7 +369,7 @@ export async function POST(request: NextRequest) {
       const { data: existing } = await supabase
         .from('race_rooms')
         .select('id')
-        .eq('code', roomCode)
+        .eq('room_code', roomCode)
         .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .single();
 
@@ -386,16 +388,14 @@ export async function POST(request: NextRequest) {
     const { data: room, error: createError } = await supabase
       .from('race_rooms')
       .insert({
-        code: roomCode,
+        room_code: roomCode,
         host_id: user.id,
         status: 'waiting' as RoomStatus,
-        mode,
-        time_limit: mode === 'time' ? timeLimit : null,
-        word_limit: mode === 'words' ? wordLimit : null,
-        language,
-        punctuation,
-        numbers,
-        text: text || null,
+        test_mode: mode,
+        test_duration: mode === 'time' ? timeLimit : 30,
+        test_word_count: mode === 'words' ? wordLimit : 25,
+        test_language: language,
+        test_text: text || null,
         max_participants: maxParticipants,
         is_private: isPrivate,
       })
@@ -416,7 +416,8 @@ export async function POST(request: NextRequest) {
       .insert({
         room_id: room.id,
         user_id: user.id,
-        status: 'ready',
+        is_ready: true,
+        is_finished: false,
         progress: 0,
       });
 
@@ -440,15 +441,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       room: {
         id: room.id,
-        code: room.code,
+        code: room.room_code,
         status: room.status,
-        mode: room.mode,
-        timeLimit: room.time_limit,
-        wordLimit: room.word_limit,
-        language: room.language,
-        punctuation: room.punctuation,
-        numbers: room.numbers,
-        text: room.text,
+        mode: room.test_mode,
+        timeLimit: room.test_duration,
+        wordLimit: room.test_word_count,
+        language: room.test_language,
+        punctuation: false,
+        numbers: false,
+        text: room.test_text,
         maxParticipants: room.max_participants,
         isPrivate: room.is_private,
         host: {
@@ -513,12 +514,12 @@ export async function PATCH(request: NextRequest) {
     // Fetch the room
     let query = supabase
       .from('race_rooms')
-      .select('*, race_participants(user_id, status)');
+      .select('*, race_participants(user_id, is_ready, is_finished)');
 
     if (roomId) {
       query = query.eq('id', roomId);
     } else if (code) {
-      query = query.eq('code', code.toUpperCase());
+      query = query.eq('room_code', code.toUpperCase());
     }
 
     const { data: room, error: fetchError } = await query.single();
@@ -563,7 +564,8 @@ export async function PATCH(request: NextRequest) {
           .insert({
             room_id: room.id,
             user_id: user.id,
-            status: 'ready',
+            is_ready: true,
+            is_finished: false,
             progress: 0,
           });
 
@@ -642,12 +644,12 @@ export async function PATCH(request: NextRequest) {
         // Update room to countdown status
         const updates: Record<string, unknown> = {
           status: 'countdown' as RoomStatus,
-          started_at: new Date().toISOString(),
+          countdown_started_at: new Date().toISOString(),
         };
 
         // Add text if provided
         if (text) {
-          updates.text = text;
+          updates.test_text = text;
         }
 
         const { error: startError } = await supabase
@@ -687,7 +689,10 @@ export async function PATCH(request: NextRequest) {
 
         const { error: racingError } = await supabase
           .from('race_rooms')
-          .update({ status: 'racing' as RoomStatus })
+          .update({
+            status: 'racing' as RoomStatus,
+            race_started_at: new Date().toISOString(),
+          })
           .eq('id', room.id);
 
         if (racingError) {
@@ -715,7 +720,7 @@ export async function PATCH(request: NextRequest) {
           .from('race_rooms')
           .update({
             status: 'finished' as RoomStatus,
-            finished_at: new Date().toISOString(),
+            race_ended_at: new Date().toISOString(),
           })
           .eq('id', room.id);
 

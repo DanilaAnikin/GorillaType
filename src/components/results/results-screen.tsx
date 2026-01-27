@@ -1,12 +1,25 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { Play } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { WpmChart } from './wpm-chart';
-import { ErrorsChart } from './errors-chart';
 import { StatsGrid } from './stats-grid';
 import { TestBreakdown } from './test-breakdown';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { ReplayPlayer } from '@/components/replay/replay-player';
 import type { TestResult, PersonalBest } from '@/store/results-store';
+import type { KeystrokeEvent } from '@/lib/hooks/use-keystroke-recorder';
+
+const WpmChart = dynamic(
+  () => import('./wpm-chart').then(mod => ({ default: mod.WpmChart })),
+  { ssr: false, loading: () => <div className="h-64 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--sub-alt-color, rgba(128,128,128,0.2))' }} /> }
+);
+
+const ErrorsChart = dynamic(
+  () => import('./errors-chart').then(mod => ({ default: mod.ErrorsChart })),
+  { ssr: false, loading: () => <div className="h-64 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--sub-alt-color, rgba(128,128,128,0.2))' }} /> }
+);
 
 // Crown icon component
 function CrownIcon({ className }: { className?: string }) {
@@ -70,6 +83,10 @@ interface ResultsScreenProps {
   onNextTest?: () => void;
   onShare?: () => void;
   className?: string;
+  /** Keystroke replay data captured during the test */
+  replayKeystrokes?: KeystrokeEvent[];
+  /** The original words from the test (for replay display) */
+  replayWords?: string[];
 }
 
 interface MainStatProps {
@@ -114,7 +131,19 @@ export function ResultsScreen({
   onNextTest,
   onShare,
   className,
+  replayKeystrokes,
+  replayWords,
 }: ResultsScreenProps) {
+  const [showReplay, setShowReplay] = useState(false);
+
+  const hasReplayData = !!(replayKeystrokes && replayKeystrokes.length > 0 && replayWords && replayWords.length > 0);
+
+  // Calculate total replay duration from keystrokes
+  const replayDurationMs = useMemo(() => {
+    if (!replayKeystrokes || replayKeystrokes.length === 0) return 0;
+    return replayKeystrokes[replayKeystrokes.length - 1].timestampMs;
+  }, [replayKeystrokes]);
+
   // Check if current result matches or beats personal best
   const isPersonalBestMatch = useMemo(() => {
     if (!personalBest) return isNewPersonalBest;
@@ -125,6 +154,7 @@ export function ResultsScreen({
   // to support Tab (new words), Tab+Enter (same words), and Escape (reset)
 
   return (
+    <ErrorBoundary>
     <div className={cn(
       'w-full max-w-4xl mx-auto px-4 py-8 space-y-8',
       'animate-in fade-in slide-in-from-bottom-4 duration-500',
@@ -220,7 +250,36 @@ export function ResultsScreen({
           <ShareIcon />
           Share
         </button>
+
+        <button
+          onClick={() => setShowReplay(true)}
+          disabled={!hasReplayData}
+          title={hasReplayData ? 'Watch keystroke replay' : 'No replay data'}
+          className={cn(
+            'flex items-center gap-2 px-6 py-3 rounded-lg',
+            'font-medium transition-all duration-125',
+            'focus:outline-none focus:ring-2 focus:ring-main focus:ring-offset-2 focus:ring-offset-bg',
+            hasReplayData
+              ? 'bg-sub-alt hover:bg-text text-text hover:text-bg hover:scale-105 active:scale-95'
+              : 'bg-sub-alt/50 text-sub cursor-not-allowed opacity-50'
+          )}
+        >
+          <Play className="w-5 h-5" />
+          Watch Replay
+        </button>
       </div>
+
+      {/* Replay Player */}
+      {showReplay && hasReplayData && (
+        <ReplayPlayer
+          keystrokes={replayKeystrokes!}
+          words={replayWords!}
+          totalDurationMs={replayDurationMs}
+          finalWpm={result.wpm}
+          finalAccuracy={result.accuracy}
+          onClose={() => setShowReplay(false)}
+        />
+      )}
 
       {/* Keyboard Hint */}
       <div className="flex flex-col items-center gap-2 text-sm text-sub transition-all duration-125">
@@ -246,5 +305,6 @@ export function ResultsScreen({
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }

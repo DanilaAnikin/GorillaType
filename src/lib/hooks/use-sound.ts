@@ -7,16 +7,17 @@ import { useConfigStore, type ClickSound, type ErrorSound } from '@/store/config
 // Sound manifest mapping sound IDs to file paths
 const SOUND_MANIFEST = {
   click: {
-    click: '/sounds/click/click.mp3',
-    beep: '/sounds/click/beep.mp3',
-    pop: '/sounds/click/pop.mp3',
-    nk_cream: '/sounds/click/nk_cream.mp3',
-    typewriter: '/sounds/click/typewriter.mp3',
+    click: '/sounds/click.wav',
+    beep: '/sounds/beep.wav',
+    pop: '/sounds/pop.wav',
+    nk_cream: '/sounds/nk-cream.wav',
+    typewriter: '/sounds/typewriter.wav',
   },
   error: {
-    beep: '/sounds/error/beep.mp3',
-    damage: '/sounds/error/damage.mp3',
+    beep: '/sounds/error-beep.wav',
+    damage: '/sounds/error-damage.wav',
   },
+  completion: '/sounds/complete.wav',
 } as const;
 
 // Type definitions
@@ -37,6 +38,8 @@ export interface UseSoundReturn {
   playClick: () => void;
   /** Play the selected error sound */
   playError: () => void;
+  /** Play the completion chime sound */
+  playComplete: () => void;
   /** Set the volume for all sounds */
   setVolume: (volume: number) => void;
   /** Enable or disable sounds */
@@ -219,6 +222,12 @@ export function useSound(options: UseSoundOptions = {}): UseSoundReturn {
       }
     }
 
+    // Also preload the completion sound
+    if (!failedSounds.has(SOUND_MANIFEST.completion)) {
+      preloadSound(SOUND_MANIFEST.completion, volume);
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsReady(true);
   }, [clickSound, errorSound, volume]);
 
@@ -270,6 +279,23 @@ export function useSound(options: UseSoundOptions = {}): UseSoundReturn {
   }, []);
 
   /**
+   * Play the completion chime sound
+   * Plays if volume is > 0, regardless of click/error enabled state
+   */
+  const playComplete = useCallback(() => {
+    const currentVolume = volumeRef.current;
+
+    if (currentVolume === 0) {
+      return;
+    }
+
+    const path = SOUND_MANIFEST.completion;
+    if (!failedSounds.has(path)) {
+      playSound(path, currentVolume);
+    }
+  }, []);
+
+  /**
    * Set volume for all sounds (0-1 range)
    */
   const setVolume = useCallback((newVolume: number) => {
@@ -311,6 +337,11 @@ export function useSound(options: UseSoundOptions = {}): UseSoundReturn {
       }
     });
 
+    // Preload completion sound
+    if (!failedSounds.has(SOUND_MANIFEST.completion)) {
+      preloadSound(SOUND_MANIFEST.completion, currentVolume);
+    }
+
     // Only set hasSounds to true if not all sounds have failed
     const allClickSoundsFailed = Object.values(SOUND_MANIFEST.click).every(p => failedSounds.has(p));
     const allErrorSoundsFailed = Object.values(SOUND_MANIFEST.error).every(p => failedSounds.has(p));
@@ -329,6 +360,7 @@ export function useSound(options: UseSoundOptions = {}): UseSoundReturn {
   return {
     playClick,
     playError,
+    playComplete,
     setVolume,
     setEnabled,
     preloadSounds,

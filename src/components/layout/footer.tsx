@@ -46,7 +46,7 @@ export function Footer() {
           {/* Social Icons */}
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/yourusername/gorilla-type"
+              href="https://github.com/DanilaAnikin/GorillaType/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sub hover:text-text transition-all duration-125"

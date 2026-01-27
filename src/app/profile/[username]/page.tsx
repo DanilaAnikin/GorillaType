@@ -7,6 +7,7 @@ import { PersonalBests, type PersonalBestsData } from '@/components/profile/pers
 import { AchievementBadges, type Achievement } from '@/components/profile/achievement-badges';
 import { TestHistory, type TestResult } from '@/components/profile/test-history';
 import { PrivateProfileView } from '@/components/profile/private-profile-view';
+import { ProfileExtras } from '@/components/profile/profile-extras';
 
 /**
  * Social links structure stored in JSONB
@@ -518,6 +519,24 @@ export default async function ProfilePage({
       <TestHistory
         results={testHistory}
         pageSize={10}
+      />
+
+      {/* Activity Heatmap, Badge Showcase, and Social Share Card */}
+      <ProfileExtras
+        username={dbUser.username}
+        shareCardData={{
+          username: dbUser.username,
+          displayName: dbUser.display_name || undefined,
+          level: dbUser.level || 1,
+          averageWPM,
+          averageAccuracy,
+          testsCompleted: dbUser.tests_completed || 0,
+          currentStreak: dbUser.current_streak || 0,
+          bestWPM: testHistory.length > 0
+            ? Math.max(...testHistory.map((t) => t.wpm))
+            : undefined,
+        }}
+        profileUrl={`/profile/${dbUser.username}`}
       />
     </div>
   );

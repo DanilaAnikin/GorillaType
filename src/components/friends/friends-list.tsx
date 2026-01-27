@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { UserMinus, MessageCircle, Trophy, Star } from "lucide-react";
+import { UserMinus, MessageCircle, Trophy, Star, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { useUIStore } from "@/store/ui-store";
+import { SendChallengeModal, type ChallengedUser } from "@/components/challenges/send-challenge-modal";
 import type { Friend } from "./types";
 
 /**
@@ -48,6 +49,7 @@ export function FriendsList({
 }: FriendsListProps) {
   const openDirectMessage = useUIStore((state) => state.openDirectMessage);
   const [creatingDMForFriend, setCreatingDMForFriend] = React.useState<string | null>(null);
+  const [challengeTarget, setChallengeTarget] = React.useState<ChallengedUser | null>(null);
 
   // Handle starting a DM with a friend
   const handleStartDM = async (friendship: Friend) => {
@@ -113,6 +115,15 @@ export function FriendsList({
 
   return (
     <div className={cn("space-y-2", className)}>
+      {/* Challenge Modal */}
+      {challengeTarget && (
+        <SendChallengeModal
+          isOpen={!!challengeTarget}
+          onClose={() => setChallengeTarget(null)}
+          challengedUser={challengeTarget}
+        />
+      )}
+
       {friends.map((friendship) => {
         const friend = friendship.friend;
         const isRemoving = removingFriendId === friendship.id;
@@ -165,6 +176,26 @@ export function FriendsList({
 
             {/* Actions */}
             <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+              {/* Challenge */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setChallengeTarget({
+                    id: friend.id,
+                    username: friend.username,
+                    avatarUrl: friend.avatarUrl,
+                    displayName: friend.displayName,
+                  })
+                }
+                disabled={isLoading}
+                leftIcon={<Swords className="w-4 h-4" />}
+                className="text-main hover:text-main"
+                aria-label="Challenge friend"
+              >
+                Challenge
+              </Button>
+
               {/* Message */}
               <Button
                 variant="ghost"

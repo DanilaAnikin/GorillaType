@@ -263,7 +263,7 @@ export default function ClanDetailPage() {
             <Users className="w-8 h-8 text-error" />
           </div>
           <h2 className="text-xl font-medium text-text mb-2">{error}</h2>
-          <p className="text-sub mb-4">The clan you're looking for doesn't exist or has been deleted.</p>
+          <p className="text-sub mb-4">The clan you&apos;re looking for doesn&apos;t exist or has been deleted.</p>
           <Link href="/clans">
             <Button variant="active" leftIcon={<ArrowLeft className="w-4 h-4" />}>
               Back to Clans

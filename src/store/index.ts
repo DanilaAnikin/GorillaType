@@ -57,3 +57,9 @@ export type {
   TooltipState,
   UIState,
 } from './ui-store';
+
+export { useNotificationsStore } from './notifications-store';
+export type {
+  InboxNotificationType,
+  InboxNotification,
+} from './notifications-store';

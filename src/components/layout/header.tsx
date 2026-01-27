@@ -15,6 +15,9 @@ import {
   Keyboard,
   Users,
   Shield,
+  ChartLine,
+  Target,
+  Swords,
 } from "lucide-react";
 import { useUserStore, selectIsLoggedIn, selectDisplayName, selectAvatarUrl } from "@/store/user-store";
 import { Avatar } from "@/components/ui/avatar";
@@ -34,6 +37,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { NotificationCenter } from "@/components/notifications";
 
 /* ============================================
    HEADER COMPONENT
@@ -50,12 +54,17 @@ interface NavItem {
 }
 
 /**
- * Main navigation items.
+ * Main navigation items (always visible).
  */
 const navItems: NavItem[] = [
   {
     href: "/leaderboards",
     label: "Leaderboards",
+    icon: <Trophy className="h-4 w-4" />,
+  },
+  {
+    href: "/tournaments",
+    label: "Tournaments",
     icon: <Trophy className="h-4 w-4" />,
   },
   {
@@ -72,6 +81,27 @@ const navItems: NavItem[] = [
     href: "/about",
     label: "About",
     icon: <Info className="h-4 w-4" />,
+  },
+];
+
+/**
+ * Authenticated navigation items (only visible when logged in).
+ */
+const authNavItems: NavItem[] = [
+  {
+    href: "/analytics",
+    label: "Analytics",
+    icon: <ChartLine className="h-4 w-4" />,
+  },
+  {
+    href: "/practice",
+    label: "Practice",
+    icon: <Target className="h-4 w-4" />,
+  },
+  {
+    href: "/challenges",
+    label: "Challenges",
+    icon: <Swords className="h-4 w-4" />,
   },
 ];
 
@@ -156,6 +186,24 @@ export function Header() {
                 </Link>
               );
             })}
+            {isLoggedIn && authNavItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-[125ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                    isActive
+                      ? "text-main bg-sub-alt"
+                      : "text-sub hover:text-main hover:bg-sub-alt/50"
+                  )}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -199,6 +247,9 @@ export function Header() {
               {isDark ? "Light mode" : "Dark mode"}
             </TooltipContent>
           </Tooltip>
+
+          {/* Notification Center */}
+          <NotificationCenter />
 
           {/* User Menu */}
           {isLoggedIn ? (

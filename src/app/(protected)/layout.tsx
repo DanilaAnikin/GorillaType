@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/user-store";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -50,5 +51,9 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <ErrorBoundary>
+      {children}
+    </ErrorBoundary>
+  );
 }

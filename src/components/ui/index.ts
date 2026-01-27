@@ -99,6 +99,9 @@ export {
 } from "./slider";
 export type { SliderProps, RangeSliderProps, SliderWithLabelProps } from "./slider";
 
+// Error Boundary
+export { ErrorBoundary, ErrorBoundaryWrapper } from "./error-boundary";
+
 // Select
 export {
   Select,

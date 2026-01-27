@@ -28,6 +28,7 @@ import {
   Eye,
   EyeOff,
   Keyboard,
+  Mail,
   Gauge,
   AlertCircle,
   Play,
@@ -39,6 +40,8 @@ import {
   Sparkles,
   ChevronRight,
   ArrowLeft,
+  ChartLine,
+  Target,
 } from "lucide-react";
 import { useTypingStore } from "@/store/typing-store";
 import { useConfigStore, Theme, FontFamily, FunboxMode } from "@/store/config-store";
@@ -407,6 +410,71 @@ export function CommandPalette() {
         setOpen(false);
       },
       category: "navigation",
+    });
+
+    items.push({
+      id: "nav-contact",
+      label: "Go to Contact",
+      description: "Get in touch or report issues",
+      icon: <Mail className="h-4 w-4" />,
+      action: () => {
+        router.push("/contact");
+        setOpen(false);
+      },
+      category: "navigation",
+      keywords: ["email", "support", "help", "feedback", "bug"],
+    });
+
+    items.push({
+      id: "nav-analytics",
+      label: "Go to Analytics",
+      description: "View your typing statistics and progress",
+      icon: <ChartLine className="h-4 w-4" />,
+      action: () => {
+        router.push("/analytics");
+        setOpen(false);
+      },
+      category: "navigation",
+      keywords: ["stats", "progress", "charts", "data", "history"],
+    });
+
+    items.push({
+      id: "nav-practice",
+      label: "Go to Practice",
+      description: "Targeted practice to improve your skills",
+      icon: <Target className="h-4 w-4" />,
+      action: () => {
+        router.push("/practice");
+        setOpen(false);
+      },
+      category: "navigation",
+      keywords: ["train", "improve", "drill", "exercise"],
+    });
+
+    items.push({
+      id: "nav-challenges",
+      label: "Go to Challenges",
+      description: "Take on typing challenges",
+      icon: <Swords className="h-4 w-4" />,
+      action: () => {
+        router.push("/challenges");
+        setOpen(false);
+      },
+      category: "navigation",
+      keywords: ["compete", "battle", "contest", "mission"],
+    });
+
+    items.push({
+      id: "nav-tournaments",
+      label: "Go to Tournaments",
+      description: "Join competitive typing tournaments",
+      icon: <Trophy className="h-4 w-4" />,
+      action: () => {
+        router.push("/tournaments");
+        setOpen(false);
+      },
+      category: "navigation",
+      keywords: ["compete", "bracket", "competition", "event"],
     });
 
     // ========== TEST CONFIGURATION COMMANDS ==========

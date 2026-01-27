@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useConfigStore, type CustomThemeColors } from '@/store/config-store';
 import { useUIStore } from '@/store/ui-store';
 import { useUserStore } from '@/store/user-store';
@@ -8,6 +9,11 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { ChatPanel, ChatToggle } from '@/components/chat';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+const CommandPalette = dynamic(
+  () => import('@/components/layout/command-palette').then(mod => ({ default: mod.CommandPalette })),
+  { ssr: false }
+);
 
 interface ProvidersProps {
   children: ReactNode;
@@ -259,6 +265,7 @@ export function Providers({ children }: ProvidersProps) {
       ) : (
         <>
           {children}
+          <CommandPalette />
           <ChatToggle />
           <ChatPanel />
         </>

@@ -45,6 +45,7 @@ const OptionButton = memo(function OptionButton({
       disabled={disabled}
       className={cn(
         'px-3 py-1.5 text-sm font-medium rounded transition-all duration-125',
+        'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-main focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
         {
           'bg-main text-bg': isActive && !disabled,
@@ -80,6 +81,7 @@ const ToggleButton = memo(function ToggleButton({
       disabled={disabled}
       className={cn(
         'flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded transition-all duration-125',
+        'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-main focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
         {
           'bg-main text-bg': isActive && !disabled,
@@ -410,7 +412,7 @@ export const TestConfigBar = memo(function TestConfigBar({
   return (
     <div
       className={cn(
-        'flex items-center justify-center flex-wrap gap-2 px-4 py-3 rounded-lg',
+        'config-bar flex items-center justify-center flex-wrap gap-2 px-4 py-3 rounded-lg',
         'bg-sub-alt transition-all duration-125',
         {
           'opacity-50 pointer-events-none': isActive,

@@ -1436,5 +1436,68 @@ body::-webkit-scrollbar-thumb:hover {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .caret {
+    forced-color-adjust: none;
+  }
+}
+
+/* ============================================
+   MOBILE TOUCH OPTIMIZATION
+   ============================================ */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text selection on interactive elements */
+  button, [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling for mobile */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+
+  /* Adjust font size for readability on mobile */
+  .typing-area {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    line-height: 1.8;
+  }
+
+  /* Stack navigation on mobile */
+  .nav-items {
+    gap: 0.5rem;
+  }
+
+  /* Better spacing for config bar on mobile */
+  .config-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  /* Full-width modals on mobile */
+  [role="dialog"] {
+    max-width: 95vw !important;
+    margin: 1rem;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

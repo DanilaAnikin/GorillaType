@@ -10,6 +10,7 @@ import { useResultsStore, type TestResult, type PersonalBest } from '@/store/res
 import { generateWords, generateQuote, generateWeakspotWords, generateBigramWords } from '@/lib/utils/word-generator';
 import { useSyncResults } from '@/lib/hooks/use-sync-results';
 import { useSound } from '@/lib/hooks/use-sound';
+import { useKeystrokeRecorder, type KeystrokeEvent } from '@/lib/hooks/use-keystroke-recorder';
 
 // Import typing components
 import { WordDisplay } from './word-display';
@@ -19,6 +20,7 @@ import { TimerDisplay } from './timer-display';
 import { RestartButton } from './restart-button';
 import { Keymap } from './keymap';
 import { ResultsScreen, ShareModal } from '@/components/results';
+import { announce } from '@/components/ui/sr-announcer';
 
 export interface TypingTestProps {
   /** Callback when test completes */
@@ -46,6 +48,9 @@ export const TypingTest = memo(function TypingTest({
   const [currentResult, setCurrentResult] = useState<TestResult | null>(null);
   const [isNewPersonalBest, setIsNewPersonalBest] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  // Replay: captured keystrokes and words from the completed test
+  const [capturedKeystrokes, setCapturedKeystrokes] = useState<KeystrokeEvent[]>([]);
+  const [capturedWords, setCapturedWords] = useState<string[]>([]);
   // Track Tab key state for Tab+Enter combination
   const tabPressedRef = useRef(false);
   const tabTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -53,6 +58,9 @@ export const TypingTest = memo(function TypingTest({
   const lastProcessedStatusRef = useRef<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Keystroke recorder for replay
+  const { startRecording, recordKeystroke, stopRecording, reset: resetRecorder } = useKeystrokeRecorder();
 
   // Get state from stores
   const status = useTypingStore((state) => state.status);
@@ -90,7 +98,7 @@ export const TypingTest = memo(function TypingTest({
   const setFocusMode = useUIStore((state) => state.setFocusMode);
 
   // Sound hook - initialized with settings from config store
-  const { playClick, playError, setVolume: setSoundVolume, setEnabled: setSoundEnabled } = useSound({
+  const { playClick, playError, playComplete, setVolume: setSoundVolume, setEnabled: setSoundEnabled } = useSound({
     volume: soundVolume,
     enabled: soundOnClick || soundOnError,
   });
@@ -145,6 +153,25 @@ export const TypingTest = memo(function TypingTest({
       setFocusMode(false);
     };
   }, [status, setFocusMode]);
+
+  // Keystroke recording: start when test begins, stop when it finishes
+  useEffect(() => {
+    if (status === 'running') {
+      startRecording();
+    }
+  }, [status, startRecording]);
+
+  // Announce test state changes for screen readers
+  useEffect(() => {
+    if (status === 'running') {
+      announce('Typing test started', 'assertive');
+    } else if (status === 'finished') {
+      announce(
+        `Test finished. WPM: ${Math.round(stats.wpm)}, Accuracy: ${Math.round(stats.accuracy)}%`,
+        'assertive'
+      );
+    }
+  }, [status, stats.wpm, stats.accuracy]);
 
   // Map language setting to word generator language type
   const getWordGeneratorLanguage = useCallback((lang: string): 'english' | 'programming' | 'custom' => {
@@ -415,6 +442,16 @@ export const TypingTest = memo(function TypingTest({
         }
 
         // Regular backspace - delete single character
+        {
+          const storeState = useTypingStore.getState();
+          recordKeystroke({
+            key: 'Backspace',
+            keyCode: 'Backspace',
+            isCorrect: true, // Backspace is always neutral
+            charIndex: storeState.currentCharIndex,
+            wordIndex: storeState.currentWordIndex,
+          });
+        }
         handleBackspace();
         // Play click sound on backspace too
         if (soundOnClick && clickSound !== 'off') {
@@ -426,6 +463,16 @@ export const TypingTest = memo(function TypingTest({
       // Handle space
       if (event.key === ' ') {
         event.preventDefault();
+        {
+          const storeState = useTypingStore.getState();
+          recordKeystroke({
+            key: ' ',
+            keyCode: 'Space',
+            isCorrect: true, // Space correctness is handled at word level
+            charIndex: storeState.currentCharIndex,
+            wordIndex: storeState.currentWordIndex,
+          });
+        }
         handleSpace();
         // Play click sound on space
         if (soundOnClick && clickSound !== 'off') {
@@ -444,6 +491,15 @@ export const TypingTest = memo(function TypingTest({
         const expectedChar = currentWord?.text[currentCharIndex];
         const isError = expectedChar !== undefined && event.key !== expectedChar;
 
+        // Record keystroke for replay
+        recordKeystroke({
+          key: event.key,
+          keyCode: event.code || event.key,
+          isCorrect: !isError,
+          charIndex: currentCharIndex,
+          wordIndex: useTypingStore.getState().currentWordIndex,
+        });
+
         handleKeyPress(event.key);
 
         // Play appropriate sound
@@ -454,7 +510,7 @@ export const TypingTest = memo(function TypingTest({
         }
       }
     },
-    [status, handleKeyPress, handleBackspace, handleDeleteWord, handleDeleteLine, handleSpace, soundOnClick, soundOnError, clickSound, errorSound, playClick, playError]
+    [status, handleKeyPress, handleBackspace, handleDeleteWord, handleDeleteLine, handleSpace, soundOnClick, soundOnError, clickSound, errorSound, playClick, playError, recordKeystroke]
   );
 
   // Handle focus events
@@ -482,6 +538,14 @@ export const TypingTest = memo(function TypingTest({
     // Prevent duplicate processing using ref
     if (lastProcessedStatusRef.current === 'finished') return;
     lastProcessedStatusRef.current = 'finished';
+
+    // Stop keystroke recording and capture data for replay
+    const finishedKeystrokes = stopRecording();
+    const finishedWords = useTypingStore.getState().originalWordStrings;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCapturedKeystrokes(finishedKeystrokes);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCapturedWords([...finishedWords]);
 
     // Create the test result
     const duration = mode === 'time' ? time : words;
@@ -522,6 +586,7 @@ export const TypingTest = memo(function TypingTest({
     // to external state changes (typing store status) and creating derived state
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentResult(result);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsNewPersonalBest(isNewPB);
 
     // Save result to local store (always)
@@ -550,26 +615,35 @@ export const TypingTest = memo(function TypingTest({
       });
     }
 
+    // Play completion chime
+    playComplete();
+
     onComplete?.();
-  }, [status, mode, time, words, language, difficulty, punctuation, numbers, stats, wpmHistory, timeElapsed, missedKeys, personalBest, addResult, updatePersonalBest, updateWeakspotData, onComplete, isAuthenticated, userId, syncResult]);
+  }, [status, mode, time, words, language, difficulty, punctuation, numbers, stats, wpmHistory, timeElapsed, missedKeys, personalBest, addResult, updatePersonalBest, updateWeakspotData, onComplete, isAuthenticated, userId, syncResult, playComplete, stopRecording]);
 
   // Restart handler - generates new words
   const handleRestart = useCallback(() => {
     setCurrentResult(null);
     setIsNewPersonalBest(false);
+    setCapturedKeystrokes([]);
+    setCapturedWords([]);
+    resetRecorder();
     resetTest();
     initTest();
     // Focus the input after restart
     setTimeout(() => inputRef.current?.focus(), 0);
-  }, [resetTest, initTest]);
+  }, [resetTest, initTest, resetRecorder]);
 
   // Config change handler
   const handleConfigChange = useCallback(() => {
     setCurrentResult(null);
     setIsNewPersonalBest(false);
+    setCapturedKeystrokes([]);
+    setCapturedWords([]);
+    resetRecorder();
     resetTest();
     initTest();
-  }, [resetTest, initTest]);
+  }, [resetTest, initTest, resetRecorder]);
 
   // Share handler - opens share modal
   const handleShare = useCallback(() => {
@@ -613,6 +687,8 @@ export const TypingTest = memo(function TypingTest({
           onNextTest={handleRestart}
           onShare={handleShare}
           className={className}
+          replayKeystrokes={capturedKeystrokes}
+          replayWords={capturedWords}
         />
         <ShareModal
           isOpen={isShareModalOpen}
@@ -629,6 +705,8 @@ export const TypingTest = memo(function TypingTest({
   return (
     <div
       ref={containerRef}
+      role="application"
+      aria-label="Typing test"
       className={cn('w-full max-w-4xl mx-auto space-y-8', className)}
       onClick={handleContainerClick}
     >

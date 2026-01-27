@@ -1,4 +1,8 @@
+'use client';
+
 import { TypingTest } from '@/components/typing/typing-test';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { TypingErrorFallback } from '@/components/typing/typing-error-fallback';
 
 /**
  * Homepage - Main typing test interface.
@@ -9,10 +13,12 @@ export default function HomePage() {
     <div className="container mx-auto px-4 py-8 md:py-16">
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-16rem)]">
         {/* Typing Test Component */}
-        <TypingTest
-          className="w-full"
-          showResults={true}
-        />
+        <ErrorBoundary fallback={<TypingErrorFallback onReset={() => window.location.reload()} />}>
+          <TypingTest
+            className="w-full"
+            showResults={true}
+          />
+        </ErrorBoundary>
 
         {/* Keyboard Shortcuts Hint */}
         <div className="mt-8 text-center text-sm text-sub">

@@ -336,6 +336,7 @@ function RaceTest({
   }, [currentIndex, text, typedText, errors, startTime, totalChars, isFinished, onProgress, onFinish]);
 
   // Calculate current stats
+  // eslint-disable-next-line react-hooks/purity
   const elapsed = startTime ? (Date.now() - startTime) / 1000 / 60 : 0;
   const currentWpm = elapsed > 0 ? Math.round(currentIndex / 5 / elapsed) : 0;
   const currentAccuracy = typedText.length > 0
@@ -592,12 +593,17 @@ export function RaceRoom({ initialRoom, roomCode }: RaceRoomProps) {
           // Handle countdown start
           if (data.room.status === 'countdown' && !showCountdown) {
             setShowCountdown(true);
-            // Generate race text
-            const words = generateWords('english', data.room.wordLimit || 50, {
-              punctuation: data.room.punctuation,
-              numbers: data.room.numbers,
-            });
-            setRaceText(words.join(' '));
+            // Use the server-provided text, or generate fallback
+            if (data.room.text) {
+              setRaceText(data.room.text);
+            } else {
+              const lang = (data.room.language || 'english') as 'english' | 'programming' | 'custom';
+              const words = generateWords(lang, data.room.wordLimit || 50, {
+                punctuation: data.room.punctuation,
+                numbers: data.room.numbers,
+              });
+              setRaceText(words.join(' '));
+            }
           }
         }
       } catch (error) {
@@ -637,8 +643,9 @@ export function RaceRoom({ initialRoom, roomCode }: RaceRoomProps) {
     setIsStarting(true);
 
     try {
-      // Generate race text
-      const words = generateWords('english', room.wordLimit || 50, {
+      // Generate race text using the room's configured language
+      const lang = (room.language || 'english') as 'english' | 'programming' | 'custom';
+      const words = generateWords(lang, room.wordLimit || 50, {
         punctuation: room.punctuation,
         numbers: room.numbers,
       });
@@ -707,26 +714,32 @@ export function RaceRoom({ initialRoom, roomCode }: RaceRoomProps) {
         ),
       }));
 
-      // In production, send to server
-      try {
-        await fetch('/api/race', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code: roomCode,
-            action: 'finish',
-          }),
-        });
-      } catch (error) {
-        console.error('Error finishing race:', error);
+      // Only the host can transition the room to finished
+      // Individual participant completion is tracked via local state + polling
+      if (isHost) {
+        // Wait a moment for other participants, then finish the room
+        setTimeout(async () => {
+          try {
+            await fetch('/api/race', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                code: roomCode,
+                action: 'finish',
+              }),
+            });
+          } catch (error) {
+            console.error('Error finishing race:', error);
+          }
+        }, 3000);
       }
 
-      // Mark room as finished after a delay
+      // Mark room as finished after a delay (polling will also pick this up)
       setTimeout(() => {
         setRoom((prev) => ({ ...prev, status: 'finished' }));
-      }, 2000);
+      }, 5000);
     },
-    [user?.id, roomCode]
+    [user?.id, roomCode, isHost]
   );
 
   // Handle countdown complete
@@ -767,7 +780,7 @@ export function RaceRoom({ initialRoom, roomCode }: RaceRoomProps) {
       ) : room.status === 'racing' ? (
         <RaceTest
           room={room}
-          text={raceText}
+          text={raceText || room.text || ''}
           onProgress={handleProgress}
           onFinish={handleFinish}
         />

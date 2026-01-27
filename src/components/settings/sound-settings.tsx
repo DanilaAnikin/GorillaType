@@ -83,18 +83,36 @@ export const SoundSettings = memo(function SoundSettings({
     }
   };
 
+  // Map config sound IDs to actual file paths
+  const CLICK_SOUND_FILES: Record<string, string> = {
+    click: '/sounds/click.wav',
+    beep: '/sounds/beep.wav',
+    pop: '/sounds/pop.wav',
+    nk_cream: '/sounds/nk-cream.wav',
+    typewriter: '/sounds/typewriter.wav',
+  };
+
+  const ERROR_SOUND_FILES: Record<string, string> = {
+    beep: '/sounds/error-beep.wav',
+    damage: '/sounds/error-damage.wav',
+  };
+
   const playTestSound = (type: 'click' | 'error') => {
     // Play the actual sound for testing
     const soundId = type === 'click' ? sound.clickSound : sound.errorSound;
     if (soundId === 'off') return;
 
+    const fileMap = type === 'click' ? CLICK_SOUND_FILES : ERROR_SOUND_FILES;
+    const filePath = fileMap[soundId];
+    if (!filePath) return;
+
     try {
-      const audio = new Audio(`/sounds/${type}/${soundId}.mp3`);
+      const audio = new Audio(filePath);
       audio.volume = sound.volume;
 
       // Handle load errors gracefully
       audio.onerror = () => {
-        console.warn(`[SoundSettings] Test sound not available: /sounds/${type}/${soundId}.mp3`);
+        console.warn(`[SoundSettings] Test sound not available: ${filePath}`);
         // Silently fail - sound file doesn't exist
       };
 

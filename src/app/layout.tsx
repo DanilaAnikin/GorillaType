@@ -4,6 +4,9 @@ import './globals.css';
 import { Providers } from '@/components/providers';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { SkipLink } from '@/components/ui/skip-link';
+import { SRAnnouncerProvider } from '@/components/ui/sr-announcer';
 
 const inter = Inter({
   variable: '--font-sans',
@@ -64,10 +67,14 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col`}
       >
+        <SkipLink />
         <Providers>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <SRAnnouncerProvider>
+            <Header />
+            <main id="main-content" className="flex-1 pb-16 md:pb-0">{children}</main>
+            <Footer />
+            <MobileNav />
+          </SRAnnouncerProvider>
         </Providers>
       </body>
     </html>

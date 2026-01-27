@@ -1,9 +1,22 @@
 "use client";
 
-import { useMemo } from "react";
+import { Fragment, useMemo, useState, useCallback } from "react";
 import { cn } from "@/lib/utils/cn";
 import { formatDate, formatNumber } from "@/lib/utils/formatting";
 import { Activity } from "lucide-react";
+
+/**
+ * Timeline range options for the heatmap.
+ */
+const TIMELINE_OPTIONS = [
+  { label: "Week", days: 7 },
+  { label: "Month", days: 30 },
+  { label: "Year", days: 365 },
+  { label: "500 Days", days: 500 },
+  { label: "Max", days: 0 },
+] as const;
+
+type TimelineDays = (typeof TIMELINE_OPTIONS)[number]["days"];
 
 /**
  * Activity data for a single day.
@@ -21,16 +34,20 @@ export interface DayActivity {
 export interface ActivityHeatmapProps {
   /** Activity data array */
   activities: DayActivity[];
-  /** Number of weeks to display (default: 52) */
+  /** Number of weeks to display (legacy prop, overridden by defaultDays) */
   weeks?: number;
+  /** Default number of days to display (default: 500). Pass 0 for max. */
+  defaultDays?: TimelineDays | number;
   /** Additional CSS classes */
   className?: string;
   /** Callback when a day is clicked */
   onDayClick?: (activity: DayActivity | null, date: string) => void;
+  /** Called when the user selects a different timeline range. */
+  onTimelineChange?: (days: number) => void;
 }
 
 /**
- * Get color intensity based on activity count.
+ * Get color intensity class based on activity count.
  */
 function getActivityColor(count: number, maxCount: number): string {
   if (count === 0) return "bg-sub-alt";
@@ -59,6 +76,7 @@ const MONTHS = [
 
 /**
  * ActivityHeatmap displays a GitHub-style contribution heatmap showing daily test activity.
+ * Supports configurable timeline ranges via a selector row.
  *
  * @example
  * <ActivityHeatmap
@@ -66,15 +84,24 @@ const MONTHS = [
  *     { date: "2024-01-15", count: 5, totalWPM: 450, totalTime: 900 },
  *     { date: "2024-01-16", count: 3, totalWPM: 270, totalTime: 540 },
  *   ]}
- *   weeks={52}
+ *   defaultDays={500}
  * />
  */
 export function ActivityHeatmap({
   activities,
-  weeks = 52,
+  weeks: weeksProp,
+  defaultDays = 500,
   className,
-  onDayClick
+  onDayClick,
+  onTimelineChange,
 }: ActivityHeatmapProps) {
+  const [selectedDays, setSelectedDays] = useState<number>(defaultDays);
+
+  const handleTimelineChange = useCallback((days: number) => {
+    setSelectedDays(days);
+    onTimelineChange?.(days);
+  }, [onTimelineChange]);
+
   // Create activity map for quick lookup
   const activityMap = useMemo(() => {
     const map = new Map<string, DayActivity>();
@@ -83,6 +110,42 @@ export function ActivityHeatmap({
     });
     return map;
   }, [activities]);
+
+  /**
+   * Determine the effective number of days to render.
+   * For "Max", use all available data span.
+   */
+  const effectiveDays = useMemo(() => {
+    if (selectedDays === 0) {
+      // Max: determine span from data
+      if (activities.length === 0) return 90;
+      const dates = activities.map(a => new Date(a.date).getTime());
+      const minDate = Math.min(...dates);
+      const now = new Date().getTime();
+      return Math.max(Math.ceil((now - minDate) / (24 * 60 * 60 * 1000)) + 1, 7);
+    }
+    return selectedDays;
+  }, [selectedDays, activities]);
+
+  /**
+   * Convert days to weeks for the grid.
+   */
+  const effectiveWeeks = useMemo(() => {
+    return Math.ceil(effectiveDays / 7);
+  }, [effectiveDays]);
+
+  /**
+   * Compute minimum cell size based on the number of days to display.
+   * Larger ranges get smaller minimum cells; actual size stretches to fill the container.
+   */
+  const minCellSize = useMemo(() => {
+    if (effectiveDays <= 30) return 14;
+    if (effectiveDays <= 90) return 12;
+    if (effectiveDays <= 365) return 11;
+    return 8;
+  }, [effectiveDays]);
+
+  const gapSize = minCellSize <= 8 ? 2 : 3;
 
   // Calculate max count for color scaling
   const maxCount = useMemo(() => {
@@ -94,7 +157,7 @@ export function ActivityHeatmap({
   const { grid, monthLabels, totalTests, activeDays } = useMemo(() => {
     const today = new Date();
     const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() - (weeks * 7) + 1);
+    startDate.setDate(startDate.getDate() - (effectiveWeeks * 7) + 1);
 
     // Adjust to start on Sunday
     const dayOfWeek = startDate.getDay();
@@ -106,7 +169,7 @@ export function ActivityHeatmap({
     let activeDays = 0;
     let currentMonth = -1;
 
-    for (let week = 0; week < weeks; week++) {
+    for (let week = 0; week < effectiveWeeks; week++) {
       const weekData: (DayActivity | null)[] = [];
 
       for (let day = 0; day < 7; day++) {
@@ -140,17 +203,29 @@ export function ActivityHeatmap({
     }
 
     return { grid, monthLabels, totalTests, activeDays };
-  }, [activityMap, weeks]);
+  }, [activityMap, effectiveWeeks]);
+
+  /** Build the timeline summary label. */
+  const timelineSummaryLabel = useMemo(() => {
+    if (selectedDays === 0) return "all time";
+    if (selectedDays === 365) return "this year";
+    const option = TIMELINE_OPTIONS.find(o => o.days === selectedDays);
+    if (option) {
+      if (selectedDays <= 30) return `last ${option.label.toLowerCase()}`;
+      return `last ${selectedDays} days`;
+    }
+    return `last ${selectedDays} days`;
+  }, [selectedDays]);
 
   return (
     <div
       className={cn(
-        "rounded-lg bg-sub-alt border border-sub p-6 transition-all duration-125",
+        "w-full rounded-lg bg-sub-alt border border-sub p-6 transition-all duration-125",
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-main" />
           <h2 className="text-xl font-semibold text-text">Activity</h2>
@@ -159,89 +234,134 @@ export function ActivityHeatmap({
           <span className="text-main font-medium">{formatNumber(totalTests)}</span>
           {" tests in "}
           <span className="text-main font-medium">{activeDays}</span>
-          {" days this year"}
+          {` days ${timelineSummaryLabel}`}
         </div>
       </div>
 
+      {/* Timeline selector */}
+      <div className="flex gap-1 mb-4">
+        {TIMELINE_OPTIONS.map(option => {
+          const isSelected = selectedDays === option.days;
+          return (
+            <button
+              key={option.label}
+              onClick={() => handleTimelineChange(option.days)}
+              className={cn(
+                "px-2.5 py-1 rounded text-xs font-mono font-medium transition-all duration-125 border",
+                isSelected
+                  ? "bg-main text-bg border-main"
+                  : "bg-transparent text-sub border-sub/40 hover:text-text hover:border-sub"
+              )}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Heatmap */}
-      <div className="overflow-x-auto">
-        <div className="min-w-fit">
-          {/* Month labels */}
-          <div className="flex mb-2 ml-8">
-            {monthLabels.map(({ month, weekIndex }, index) => (
-              <span
-                key={`${month}-${index}`}
-                className="text-xs text-sub"
-                style={{
-                  marginLeft: index === 0 ? weekIndex * 14 : undefined,
-                  width: index < monthLabels.length - 1
-                    ? (monthLabels[index + 1].weekIndex - weekIndex) * 14
-                    : undefined
-                }}
-              >
-                {month}
-              </span>
-            ))}
+      <div className="w-full overflow-x-auto">
+        <div className="w-full">
+          {/* Month labels row - uses CSS grid matching the activity grid below */}
+          <div
+            className="w-full mb-2"
+            style={{
+              display: "grid",
+              gridTemplateColumns: `24px repeat(${effectiveWeeks}, 1fr)`,
+              gap: `${gapSize}px`,
+            }}
+          >
+            {/* Spacer for the day-label column */}
+            <div />
+            {Array.from({ length: effectiveWeeks }, (_, weekIndex) => {
+              const label = monthLabels.find(ml => ml.weekIndex === weekIndex);
+              return (
+                <span key={weekIndex} className="text-xs text-sub truncate">
+                  {label ? label.month : ""}
+                </span>
+              );
+            })}
           </div>
 
-          {/* Grid */}
-          <div className="flex">
-            {/* Day labels */}
-            <div className="flex flex-col gap-[3px] mr-2 text-xs text-sub">
-              {DAYS.map((day, index) => (
+          {/* Grid: day labels (fixed) + activity cells (stretch to fill) */}
+          <div
+            className="w-full"
+            style={{
+              display: "grid",
+              gridTemplateColumns: `24px repeat(${effectiveWeeks}, 1fr)`,
+              gap: `${gapSize}px`,
+            }}
+          >
+            {/* Day labels column (7 rows) + Activity cells */}
+            {DAYS.map((day, dayIndex) => (
+              <Fragment key={day}>
+                {/* Day label */}
                 <div
-                  key={day}
-                  className="h-[11px] flex items-center"
-                  style={{ visibility: index % 2 === 1 ? "visible" : "hidden" }}
+                  className="flex items-center text-xs text-sub"
+                  style={{
+                    visibility: dayIndex % 2 === 1 ? "visible" : "hidden",
+                  }}
                 >
                   {day}
                 </div>
-              ))}
-            </div>
-
-            {/* Activity grid */}
-            <div className="flex gap-[3px]">
-              {grid.map((week, weekIndex) => (
-                <div key={weekIndex} className="flex flex-col gap-[3px]">
-                  {week.map((activity, dayIndex) => {
-                    if (activity === null) {
-                      return (
-                        <div
-                          key={`${weekIndex}-${dayIndex}`}
-                          className="w-[11px] h-[11px]"
-                        />
-                      );
-                    }
-
-                    const color = getActivityColor(activity.count, maxCount);
-
+                {/* Activity cells for this day across all weeks */}
+                {grid.map((week, weekIndex) => {
+                  const activity = week[dayIndex];
+                  if (activity === null) {
                     return (
                       <div
                         key={`${weekIndex}-${dayIndex}`}
-                        className={cn(
-                          "w-[11px] h-[11px] rounded-sm cursor-pointer transition-all duration-125 hover:ring-1 hover:ring-sub",
-                          color
-                        )}
-                        title={`${formatDate(activity.date)}: ${activity.count} tests`}
-                        onClick={() => onDayClick?.(activity.count > 0 ? activity : null, activity.date)}
+                        className="aspect-square"
+                        style={{ minWidth: `${minCellSize}px`, minHeight: `${minCellSize}px` }}
                       />
                     );
-                  })}
-                </div>
-              ))}
-            </div>
+                  }
+                  const color = getActivityColor(activity.count, maxCount);
+                  return (
+                    <div
+                      key={`${weekIndex}-${dayIndex}`}
+                      className={cn(
+                        "aspect-square rounded-sm cursor-pointer transition-all duration-125 hover:ring-1 hover:ring-sub",
+                        color
+                      )}
+                      style={{ minWidth: `${minCellSize}px`, minHeight: `${minCellSize}px` }}
+                      title={`${formatDate(activity.date)}: ${activity.count} tests`}
+                      onClick={() => onDayClick?.(activity.count > 0 ? activity : null, activity.date)}
+                    />
+                  );
+                })}
+              </Fragment>
+            ))}
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-end gap-2 mt-4 text-xs text-sub">
+          <div className="flex items-center justify-end mt-4 text-xs text-sub" style={{ gap: `${gapSize + 1}px` }}>
             <span>Less</span>
-            <div className="flex gap-[3px]">
-              <div className="w-[11px] h-[11px] rounded-sm bg-sub-alt transition-all duration-125" />
-              <div className="w-[11px] h-[11px] rounded-sm bg-main/20 transition-all duration-125" />
-              <div className="w-[11px] h-[11px] rounded-sm bg-main/40 transition-all duration-125" />
-              <div className="w-[11px] h-[11px] rounded-sm bg-main/60 transition-all duration-125" />
-              <div className="w-[11px] h-[11px] rounded-sm bg-main/80 transition-all duration-125" />
-              <div className="w-[11px] h-[11px] rounded-sm bg-main transition-all duration-125" />
+            <div className="flex" style={{ gap: `${gapSize}px` }}>
+              <div
+                className="rounded-sm bg-sub-alt border border-sub/30 transition-all duration-125"
+                style={{ width: `${minCellSize}px`, height: `${minCellSize}px` }}
+              />
+              <div
+                className="rounded-sm bg-main/20 transition-all duration-125"
+                style={{ width: `${minCellSize}px`, height: `${minCellSize}px` }}
+              />
+              <div
+                className="rounded-sm bg-main/40 transition-all duration-125"
+                style={{ width: `${minCellSize}px`, height: `${minCellSize}px` }}
+              />
+              <div
+                className="rounded-sm bg-main/60 transition-all duration-125"
+                style={{ width: `${minCellSize}px`, height: `${minCellSize}px` }}
+              />
+              <div
+                className="rounded-sm bg-main/80 transition-all duration-125"
+                style={{ width: `${minCellSize}px`, height: `${minCellSize}px` }}
+              />
+              <div
+                className="rounded-sm bg-main transition-all duration-125"
+                style={{ width: `${minCellSize}px`, height: `${minCellSize}px` }}
+              />
             </div>
             <span>More</span>
           </div>

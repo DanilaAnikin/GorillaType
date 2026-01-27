@@ -670,8 +670,8 @@ async function createDirectMessage(supabase: any, currentUserId: string, partici
 /**
  * Helper function to create a group chat
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function createGroupChat(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   currentUserId: string,
   name: string | undefined,

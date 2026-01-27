@@ -212,7 +212,7 @@ export default function AboutPage() {
           React, and Tailwind CSS.
         </p>
         <p className="flex items-center justify-center gap-2 text-sm text-sub">
-          Made with <Heart className="w-4 h-4 text-error" /> by the community
+          Made with <Heart className="w-4 h-4 text-error" /> by D.S. Anikin
         </p>
       </section>
     </div>

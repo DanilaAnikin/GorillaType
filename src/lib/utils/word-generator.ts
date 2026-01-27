@@ -713,3 +713,21 @@ export function getWordsWithBigrams(
   const wordList = language === "english" ? EXTENDED_ENGLISH_WORDS : getWordList(language);
   return wordList.filter((word) => wordContainsBigram(word, bigrams));
 }
+
+/**
+ * Generate words from a custom word list by randomly sampling.
+ * Used by Smart Practice mode to create targeted practice sets.
+ *
+ * @param wordList - Custom word list to sample from
+ * @param count - Number of words to generate
+ * @returns Array of randomly selected words from the custom list
+ */
+export function generateFromCustomList(wordList: string[], count: number): string[] {
+  if (wordList.length === 0) return [];
+
+  const result: string[] = [];
+  for (let i = 0; i < count; i++) {
+    result.push(wordList[Math.floor(Math.random() * wordList.length)]);
+  }
+  return result;
+}

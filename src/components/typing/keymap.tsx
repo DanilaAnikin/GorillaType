@@ -204,6 +204,7 @@ export const Keymap = memo(function Keymap({ className }: KeymapProps) {
   // Clear pressed keys when test finishes or resets
   useEffect(() => {
     if (status === 'finished' || status === 'idle') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPressedKeys(new Set());
     }
   }, [status]);
